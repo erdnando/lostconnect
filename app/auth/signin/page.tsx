@@ -1,15 +1,13 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 /**
- * Página de Inicio de Sesión
- * 
- * Permite a los usuarios autenticarse con Google OAuth
+ * Componente con SearchParams
  */
-export default function SignInPage() {
+function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -164,5 +162,20 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Página de Inicio de Sesión con Suspense
+ */
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   );
 }

@@ -2,13 +2,12 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 /**
- * Página de Error de Autenticación
- * 
- * Muestra mensajes de error específicos según el tipo de error de NextAuth
+ * Componente de Error con SearchParams
  */
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -179,5 +178,20 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Página de Error de Autenticación con Suspense
+ */
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 }
