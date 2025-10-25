@@ -180,7 +180,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Tipo de Post */}
       <div className="space-y-2">
-        <Label>Tipo de publicación *</Label>
+        <Label className="text-gray-900 font-semibold">Tipo de publicación *</Label>
         <div className="flex gap-2">
           <button
             type="button"
@@ -188,7 +188,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
             className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
               type === 'lost'
                 ? 'border-red-500 bg-red-50 text-red-700'
-                : 'border-gray-200 hover:border-gray-300'
+                : 'border-gray-300 hover:border-red-300 text-gray-700 hover:bg-red-50'
             }`}
           >
             🔍 Objeto Perdido
@@ -199,7 +199,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
             className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
               type === 'found'
                 ? 'border-green-500 bg-green-50 text-green-700'
-                : 'border-gray-200 hover:border-gray-300'
+                : 'border-gray-300 hover:border-green-300 text-gray-700 hover:bg-green-50'
             }`}
           >
             ✅ Objeto Encontrado
@@ -212,7 +212,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
 
       {/* Título */}
       <div className="space-y-2">
-        <Label htmlFor="title">Título *</Label>
+        <Label htmlFor="title" className="text-gray-900 font-semibold">Título *</Label>
         <Input
           id="title"
           {...register('title')}
@@ -230,7 +230,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
 
       {/* Descripción */}
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción *</Label>
+        <Label htmlFor="description" className="text-gray-900 font-semibold">Descripción *</Label>
         <Textarea
           id="description"
           {...register('description')}
@@ -241,18 +241,18 @@ export function PostForm({ initialData, postId }: PostFormProps) {
         {errors.description && (
           <p className="text-sm text-red-600">{errors.description.message}</p>
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-600">
           Mínimo 20 caracteres
         </p>
       </div>
 
       {/* Categoría */}
       <div className="space-y-2">
-        <Label htmlFor="category">Categoría *</Label>
+        <Label htmlFor="category" className="text-gray-900 font-semibold">Categoría *</Label>
         <select
           id="category"
           {...register('category')}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           {CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
@@ -267,7 +267,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
 
       {/* Imágenes */}
       <div className="space-y-2">
-        <Label>Imágenes * (1-5)</Label>
+        <Label className="text-gray-900 font-semibold">Imágenes * (1-5)</Label>
         <ImageUploader
           value={images}
           onChange={(newImages) => setValue('images', newImages)}
@@ -281,7 +281,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
 
       {/* Tags */}
       <div className="space-y-2">
-        <Label htmlFor="tags">Etiquetas (opcional)</Label>
+        <Label htmlFor="tags" className="text-gray-900 font-semibold">Etiquetas (opcional)</Label>
         <div className="flex gap-2">
           <Input
             id="tags"
@@ -301,6 +301,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
             onClick={addTag}
             disabled={!tagInput.trim() || tags.length >= 10}
             variant="outline"
+            className="text-gray-900 font-medium"
           >
             Agregar
           </Button>
@@ -324,7 +325,7 @@ export function PostForm({ initialData, postId }: PostFormProps) {
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-600">
           Máximo 10 etiquetas. Presiona Enter para agregar.
         </p>
       </div>
@@ -336,14 +337,14 @@ export function PostForm({ initialData, postId }: PostFormProps) {
           variant="outline"
           onClick={() => router.back()}
           disabled={isSubmitting}
-          className="flex-1"
+          className="flex-1 text-gray-900 font-medium border-gray-300 hover:bg-gray-100"
         >
           Cancelar
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 gap-2"
+          className="flex-1 gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium"
         >
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSubmitting

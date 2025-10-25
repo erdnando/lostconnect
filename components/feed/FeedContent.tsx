@@ -135,7 +135,7 @@ export function FeedContent() {
             <div className="flex items-center gap-2">
               {session ? (
                 <Link href="/post/new">
-                  <Button className="gap-2">
+                  <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium">
                     <Plus className="h-4 w-4" />
                     <span className="hidden sm:inline">Nuevo Post</span>
                   </Button>
@@ -159,25 +159,40 @@ export function FeedContent() {
 
           {/* Botones de filtro */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Filter className="h-4 w-4 text-gray-500" />
             <Button
-              variant={filter === 'all' ? 'default' : 'outline'}
+              variant="outline"
               size="sm"
               onClick={() => setFilter('all')}
+              className={
+                filter === 'all'
+                  ? 'bg-gray-900 text-white border-gray-900 hover:bg-gray-800'
+                  : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-100 font-medium'
+              }
             >
               Todos
             </Button>
             <Button
-              variant={filter === 'lost' ? 'default' : 'outline'}
+              variant="outline"
               size="sm"
               onClick={() => setFilter('lost')}
+              className={
+                filter === 'lost'
+                  ? 'bg-red-600 text-white border-red-600 hover:bg-red-700'
+                  : 'bg-white text-gray-900 border-gray-300 hover:bg-red-50 hover:border-red-300 font-medium'
+              }
             >
               🔍 Perdidos
             </Button>
             <Button
-              variant={filter === 'found' ? 'default' : 'outline'}
+              variant="outline"
               size="sm"
               onClick={() => setFilter('found')}
+              className={
+                filter === 'found'
+                  ? 'bg-green-600 text-white border-green-600 hover:bg-green-700'
+                  : 'bg-white text-gray-900 border-gray-300 hover:bg-green-50 hover:border-green-300 font-medium'
+              }
             >
               ✅ Encontrados
             </Button>

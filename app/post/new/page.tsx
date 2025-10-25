@@ -14,33 +14,35 @@ export const metadata: Metadata = {
  * Características:
  * - Usa el componente PostForm
  * - Header con botón de volver
- * - Layout responsive
+ * - Layout responsive con mejor diseño
  */
 export default function NewPostPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Header */}
-      <div className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header mejorado */}
+      <div className="border-b bg-white/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver al feed
             </Link>
           </div>
-          <h1 className="text-2xl font-bold mt-2">Crear Publicación</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold mt-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Crear Publicación
+          </h1>
+          <p className="text-sm text-gray-600 mt-2">
             Completa el formulario para publicar sobre un objeto perdido o encontrado
           </p>
         </div>
       </div>
 
-      {/* Contenido */}
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg border p-6 shadow-sm">
+      {/* Contenido con mejor diseño */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-xl shadow-gray-200/50">
           <PostForm />
         </div>
       </div>
