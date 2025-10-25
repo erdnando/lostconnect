@@ -129,7 +129,7 @@ export function PostCard({ post }: PostCardProps) {
             </div>
             {/* Badge de categoría */}
             <div className="absolute top-3 right-3">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-900">
                 {CATEGORY_LABELS[category] || category}
               </Badge>
             </div>
@@ -138,12 +138,12 @@ export function PostCard({ post }: PostCardProps) {
 
         <CardHeader className="pb-3">
           {/* Título */}
-          <h3 className="text-lg font-semibold line-clamp-2 hover:text-primary transition-colors">
+          <h3 className="text-lg font-semibold line-clamp-2 text-gray-900 hover:text-primary transition-colors">
             {title}
           </h3>
 
           {/* Descripción */}
-          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+          <p className="text-sm text-gray-700 line-clamp-2 mt-1">
             {description}
           </p>
         </CardHeader>
@@ -151,7 +151,7 @@ export function PostCard({ post }: PostCardProps) {
         <CardContent className="pb-3">
           {/* Ubicación */}
           {location && (location.city || location.address) && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
               <MapPin className="h-4 w-4" />
               <span className="line-clamp-1">
                 {location.city && location.country
@@ -165,12 +165,12 @@ export function PostCard({ post }: PostCardProps) {
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
               {tags.slice(0, 3).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
+                <Badge key={index} variant="outline" className="text-xs border-gray-300 text-gray-900">
                   #{tag}
                 </Badge>
               ))}
               {tags.length > 3 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs border-gray-300 text-gray-900">
                   +{tags.length - 3}
                 </Badge>
               )}
@@ -189,15 +189,15 @@ export function PostCard({ post }: PostCardProps) {
               />
             ) : (
               <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xs font-semibold">
+                <span className="text-xs font-semibold text-gray-900">
                   {userId.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{userId.name}</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{userId.name}</p>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs text-gray-600">
               <Calendar className="h-3 w-3" />
               <time>{timeAgo}</time>
             </div>
@@ -206,7 +206,7 @@ export function PostCard({ post }: PostCardProps) {
 
         <CardFooter className="pt-0 border-t">
           {/* Estadísticas */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground w-full">
+          <div className="flex items-center gap-4 text-sm text-gray-600 w-full">
             {/* Comentarios */}
             <div className="flex items-center gap-1.5">
               <MessageCircle className="h-4 w-4" />
