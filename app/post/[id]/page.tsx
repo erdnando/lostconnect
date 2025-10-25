@@ -93,7 +93,7 @@ export default async function PostDetailPage({
         <div className="max-w-5xl mx-auto px-4 py-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Volver al feed
@@ -142,15 +142,15 @@ export default async function PostDetailPage({
                 </div>
               ) : (
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                  <p className="text-gray-400">Sin imágenes</p>
+                  <p className="text-gray-600">Sin imágenes</p>
                 </div>
               )}
             </div>
 
             {/* Descripción */}
             <div className="bg-white rounded-lg border p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4">Descripción</h2>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Descripción</h2>
+              <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">
                 {post.description}
               </p>
             </div>
@@ -159,12 +159,12 @@ export default async function PostDetailPage({
             {post.tags && post.tags.length > 0 && (
               <div className="bg-white rounded-lg border p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <Tag className="h-4 w-4 text-muted-foreground" />
-                  <h2 className="text-lg font-semibold">Etiquetas</h2>
+                  <Tag className="h-4 w-4 text-gray-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">Etiquetas</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary">
+                    <Badge key={index} variant="secondary" className="bg-gray-200 text-gray-900">
                       #{tag}
                     </Badge>
                   ))}
@@ -189,19 +189,19 @@ export default async function PostDetailPage({
               </Badge>
 
               {/* Título */}
-              <h1 className="text-2xl font-bold leading-tight">{post.title}</h1>
+              <h1 className="text-2xl font-bold leading-tight text-gray-900">{post.title}</h1>
 
               {/* Categoría */}
               <div className="flex items-start gap-2 text-sm">
-                <span className="font-medium text-muted-foreground">Categoría:</span>
-                <Badge variant="outline">
+                <span className="font-medium text-gray-700">Categoría:</span>
+                <Badge variant="outline" className="border-gray-300 text-gray-900">
                   {CATEGORY_LABELS[post.category] || post.category}
                 </Badge>
               </div>
 
               {/* Ubicación */}
               {post.location?.city && (
-                <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                <div className="flex items-start gap-2 text-sm text-gray-700">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <span>
                     {post.location.city}
@@ -212,7 +212,7 @@ export default async function PostDetailPage({
               )}
 
               {/* Fecha */}
-              <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <div className="flex items-start gap-2 text-sm text-gray-700">
                 <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>
                   {format(new Date(post.createdAt), "d 'de' MMMM, yyyy", {
@@ -225,20 +225,20 @@ export default async function PostDetailPage({
               <div className="pt-4 border-t">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-2xl font-bold">{post.views || 0}</p>
-                    <p className="text-xs text-muted-foreground">Vistas</p>
+                    <p className="text-2xl font-bold text-gray-900">{post.views || 0}</p>
+                    <p className="text-xs text-gray-600">Vistas</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-bold text-gray-900">
                       {post.reactions?.likes || 0}
                     </p>
-                    <p className="text-xs text-muted-foreground">Me gusta</p>
+                    <p className="text-xs text-gray-600">Me gusta</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-bold text-gray-900">
                       {post.reactions?.comments || 0}
                     </p>
-                    <p className="text-xs text-muted-foreground">Comentarios</p>
+                    <p className="text-xs text-gray-600">Comentarios</p>
                   </div>
                 </div>
               </div>
@@ -246,23 +246,23 @@ export default async function PostDetailPage({
 
             {/* Info del autor */}
             <div className="bg-white rounded-lg border p-6 shadow-sm">
-              <h3 className="font-semibold mb-3">Publicado por</h3>
+              <h3 className="font-semibold mb-3 text-gray-900">Publicado por</h3>
               <div className="flex items-center gap-3">
                 {/* Avatar placeholder */}
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                  {post.author?.name?.[0]?.toUpperCase() || 'U'}
+                  {post.userId?.name?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div>
-                  <p className="font-medium">{post.author?.name || 'Usuario'}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {post.author?.email}
+                  <p className="font-medium text-gray-900">{post.userId?.name || 'Usuario'}</p>
+                  <p className="text-sm text-gray-600">
+                    {post.userId?.email}
                   </p>
                 </div>
               </div>
 
               {/* Botones de acción */}
               <div className="mt-4 pt-4 border-t space-y-2">
-                <Button className="w-full">Contactar</Button>
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">Contactar</Button>
                 {/* TODO: Mostrar solo si es el owner */}
                 {/* <div className="flex gap-2">
                   <Button variant="outline" className="flex-1 gap-2">
@@ -280,15 +280,16 @@ export default async function PostDetailPage({
             {/* Status del post */}
             <div className="bg-white rounded-lg border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Estado</span>
+                <span className="text-sm font-medium text-gray-900">Estado</span>
                 <Badge
                   variant={post.status === 'active' ? 'default' : 'secondary'}
+                  className={post.status === 'active' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-900'}
                 >
                   {post.status === 'active' ? 'Activo' : post.status}
                 </Badge>
               </div>
               {post.status === 'active' && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   Esta publicación está activa y visible para todos
                 </p>
               )}

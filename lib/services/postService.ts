@@ -23,7 +23,7 @@ export interface CreatePostData {
   title: string;
   description: string;
   category: string;
-  images: string[]; // Base64 strings
+  images: Array<{url: string; publicId: string} | string>; // Objetos con URLs o Base64 strings
   location?: {
     coordinates: [number, number]; // [longitude, latitude]
     address?: string;
@@ -70,20 +70,33 @@ export async function createPost(data: CreatePostData) {
       throw new Error('Usuario no autenticado');
     }
 
-    // 2. Subir imágenes a Cloudinary
+    // 2. Procesar imágenes
     let uploadedImages: { url: string; publicId: string; width?: number; height?: number }[] = [];
     
     if (data.images && data.images.length > 0) {
-      const cloudinaryResults = await uploadMultipleImages(data.images, {
-        folder: 'lostconnect/posts',
-      });
+      // Separar imágenes que ya están subidas (objetos) de las que son base64 (strings)
+      const alreadyUploadedImages = data.images.filter(img => typeof img === 'object' && 'url' in img) as {url: string; publicId: string}[];
+      const base64Images = data.images.filter(img => typeof img === 'string') as string[];
 
-      uploadedImages = cloudinaryResults.map((result) => ({
-        url: result.secure_url,
-        publicId: result.public_id,
-        width: result.width,
-        height: result.height,
-      }));
+      // Agregar imágenes ya subidas
+      uploadedImages = [...alreadyUploadedImages];
+
+      // Subir imágenes base64 si hay
+      if (base64Images.length > 0) {
+        const cloudinaryResults = await uploadMultipleImages(base64Images, {
+          folder: 'lostconnect/posts',
+        });
+
+        uploadedImages = [
+          ...uploadedImages,
+          ...cloudinaryResults.map((result) => ({
+            url: result.secure_url,
+            publicId: result.public_id,
+            width: result.width,
+            height: result.height,
+          }))
+        ];
+      }
     }
 
     // 3. Preparar datos para MongoDB
