@@ -37,6 +37,7 @@ const PostSchema = new Schema<IPost>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true, // Índice definido en el campo
     },
     type: {
       type: String,
@@ -108,11 +109,8 @@ const PostSchema = new Schema<IPost>(
   }
 );
 
-// Índices
-PostSchema.index({ userId: 1 });
-PostSchema.index({ createdAt: -1 });
-PostSchema.index({ status: 1, createdAt: -1 });
-PostSchema.index({ category: 1 });
-PostSchema.index({ location: '2dsphere' }); // Para búsquedas geoespaciales
+// Evitar recrear el modelo en hot reload
+const Post = (mongoose.models?.Post as mongoose.Model<IPost>) || mongoose.model<IPost>('Post', PostSchema);
 
-export const Post = mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);
+export { Post };
+export default Post;

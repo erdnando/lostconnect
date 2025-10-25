@@ -23,10 +23,14 @@ declare global {
   var mongoose: MongooseCache | undefined;
 }
 
-let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+const globalForMongoose = globalThis as typeof globalThis & {
+  mongoose?: MongooseCache;
+};
 
-if (!global.mongoose) {
-  global.mongoose = cached;
+let cached: MongooseCache = globalForMongoose.mongoose || { conn: null, promise: null };
+
+if (!globalForMongoose.mongoose) {
+  globalForMongoose.mongoose = cached;
 }
 
 /**

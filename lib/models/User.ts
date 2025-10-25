@@ -5,6 +5,9 @@ export interface IUser extends Document {
   email: string;
   image?: string;
   emailVerified?: Date;
+  accounts?: {
+    [provider: string]: string; // { google: "123456", github: "789" }
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +24,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true, // Índice definido en el campo
     },
     image: {
       type: String,
@@ -28,14 +32,18 @@ const UserSchema = new Schema<IUser>(
     emailVerified: {
       type: Date,
     },
+    accounts: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Índices
-UserSchema.index({ email: 1 });
-
 // Evitar recrear el modelo en hot reload
-export const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+const User = (mongoose.models?.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema);
+
+export { User };
+export default User;

@@ -73,9 +73,8 @@ const CommentSchema = new Schema<IComment>(
   }
 );
 
-// Índices
-CommentSchema.index({ postId: 1, createdAt: 1 });
-CommentSchema.index({ postId: 1, parentCommentId: 1 });
-CommentSchema.index({ userId: 1, createdAt: -1 });
+// Evitar recrear el modelo en hot reload
+const Comment = (mongoose.models?.Comment as mongoose.Model<IComment>) || mongoose.model<IComment>('Comment', CommentSchema);
 
-export const Comment = mongoose.models.Comment || mongoose.model<IComment>('Comment', CommentSchema);
+export { Comment };
+export default Comment;

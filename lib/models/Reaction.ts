@@ -30,8 +30,8 @@ const ReactionSchema = new Schema<IReaction>(
   }
 );
 
-// Índice único compuesto: un usuario solo puede tener una reacción por post
-ReactionSchema.index({ userId: 1, postId: 1 }, { unique: true });
-ReactionSchema.index({ postId: 1, type: 1 });
+// Evitar recrear el modelo en hot reload
+const Reaction = (mongoose.models?.Reaction as mongoose.Model<IReaction>) || mongoose.model<IReaction>('Reaction', ReactionSchema);
 
-export const Reaction = mongoose.models.Reaction || mongoose.model<IReaction>('Reaction', ReactionSchema);
+export { Reaction };
+export default Reaction;
