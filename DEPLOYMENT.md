@@ -36,6 +36,12 @@ Vercel detectará automáticamente que es un proyecto Next.js.
 **Build Command:** `npm run build` (auto-detectado)
 **Output Directory:** `.next` (auto-detectado)
 
+⚠️ **IMPORTANTE**: El proyecto incluye archivos de configuración automática:
+- `vercel.json` - Configura el comando de instalación con `--legacy-peer-deps`
+- `.npmrc` - Asegura compatibilidad con Next.js 16 y next-auth
+
+Estos archivos ya están en el repositorio, así que Vercel los usará automáticamente.
+
 #### 4. Configurar Variables de Entorno
 
 ⚠️ **IMPORTANTE**: Agrega TODAS estas variables en Vercel:
@@ -195,6 +201,18 @@ npm start
 ---
 
 ## 🔧 Solución de Problemas Comunes
+
+### Error: "npm install exited with 1" o "ERESOLVE could not resolve"
+**Causa:** Conflicto entre Next.js 16 y next-auth que requiere Next.js 14-15.
+
+**Solución:**
+1. ✅ Ya está solucionado - El proyecto incluye `vercel.json` y `.npmrc`
+2. Vercel usará automáticamente `--legacy-peer-deps`
+3. Si el error persiste, verifica que ambos archivos estén en el repositorio:
+   ```bash
+   git ls-files | grep -E "vercel.json|.npmrc"
+   ```
+4. Si no aparecen, haz un nuevo push a GitHub
 
 ### Error: "MONGODB_URI is not defined"
 - Asegúrate de agregar todas las variables de entorno en Vercel
