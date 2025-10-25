@@ -27,9 +27,11 @@ export default auth((req) => {
   // Rutas de autenticación
   const isAuthRoute = nextUrl.pathname.startsWith("/auth");
   const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
+  const isApiRoute = nextUrl.pathname.startsWith("/api");
 
-  // Permitir todas las rutas de API de NextAuth
-  if (isApiAuthRoute) {
+  // Permitir todas las rutas de API (incluyendo /api/posts, /api/upload, etc.)
+  // La autenticación se maneja dentro de cada API route según sea necesario
+  if (isApiRoute) {
     return NextResponse.next();
   }
 

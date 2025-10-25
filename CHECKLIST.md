@@ -23,39 +23,40 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 - [ ] Configurar Git hooks (opcional)
 
 ### Sprint 1.2: Autenticación
-- [ ] Instalar NextAuth.js
-- [ ] Configurar Google OAuth Provider
-- [ ] Crear auth config file
-- [ ] Implementar API route [...nextauth]
-- [ ] Crear página Sign In
-- [ ] Crear página Error
-- [ ] Implementar middleware de protección
-- [ ] Crear hook useSession
-- [ ] Testear flujo completo
-- [ ] Verificar persistencia de sesión
+- [x] Instalar NextAuth.js
+- [x] Configurar Google OAuth Provider
+- [x] Crear auth config file
+- [x] Implementar API route [...nextauth]
+- [x] Crear página Sign In
+- [x] Crear página Error
+- [x] Implementar middleware de protección
+- [x] Crear hook useSession
+- [x] Testear flujo completo
+- [x] Verificar persistencia de sesión
 
 **Criterios de Aceptación Fase 1:**
-- [ ] Login con Google funciona
-- [ ] Logout funciona
-- [ ] Sesión persiste al recargar
-- [ ] Rutas protegidas redirigen
-- [ ] Usuario se guarda en MongoDB
+- [x] Login con Google funciona
+- [x] Logout funciona
+- [x] Sesión persiste al recargar
+- [x] Rutas protegidas redirigen
+- [x] Usuario se guarda en MongoDB
 
 ---
 
 ## 📝 FASE 2: Core Features - Posts
 
 ### Sprint 2.1: API de Posts
-- [ ] Crear servicio de Cloudinary
-- [ ] API: POST /api/posts (crear)
-- [ ] API: GET /api/posts (listar)
-- [ ] API: GET /api/posts/[id] (detalle)
-- [ ] API: PATCH /api/posts/[id] (actualizar)
-- [ ] API: DELETE /api/posts/[id] (eliminar)
-- [ ] API: POST /api/upload (subir imágenes)
-- [ ] Implementar paginación cursor-based
-- [ ] Crear postService con lógica de negocio
-- [ ] Testear todos los endpoints
+- [x] Crear servicio de Cloudinary
+- [x] API: POST /api/posts (crear)
+- [x] API: GET /api/posts (listar)
+- [x] API: GET /api/posts/[id] (detalle)
+- [x] API: PATCH /api/posts/[id] (actualizar)
+- [x] API: DELETE /api/posts/[id] (eliminar)
+- [x] API: POST /api/upload (subir imágenes)
+- [x] Implementar paginación cursor-based
+- [x] Crear postService con lógica de negocio
+- [x] Testear todos los endpoints
+- [x] Corregir middleware para permitir rutas API
 
 ### Sprint 2.2: UI de Posts
 - [ ] Crear componente PostCard
@@ -319,14 +320,61 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 **Progreso General:**
 
 ```
-FASE 1: Setup y Fundación      [████████░░] 80%
-FASE 2: Posts                   [░░░░░░░░░░]  0%
-FASE 3: Interacciones           [░░░░░░░░░░]  0%
-FASE 4: Perfil y Polish         [░░░░░░░░░░]  0%
-Deployment                      [░░░░░░░░░░]  0%
+FASE 1: Setup y Fundación      [██████████] 100% ✅
+FASE 2: Posts                   [░░░░░░░░░░]   0%
+FASE 3: Interacciones           [░░░░░░░░░░]   0%
+FASE 4: Perfil y Polish         [░░░░░░░░░░]   0%
+Deployment                      [░░░░░░░░░░]   0%
 
-TOTAL MVP                       [████░░░░░░] 16%
+TOTAL MVP                       [██░░░░░░░░] 20%
 ```
+
+---
+
+## 🎯 PRÓXIMO PASO: FASE 2 - Posts
+
+### ¿Qué sigue ahora?
+
+Según el Plan Maestro, debes iniciar **FASE 2: Core Features - Posts (Semana 3-4)**
+
+#### Sprint 2.1: API de Posts (3-4 días)
+**Objetivo:** Crear el backend para manejar posts (reportes de objetos perdidos/encontrados)
+
+**Tareas prioritarias:**
+1. ✅ Modelo Post ya existe (creado en Fase 1)
+2. 🔲 Configurar Cloudinary para subir imágenes
+3. 🔲 Crear servicio de upload de imágenes
+4. 🔲 Implementar POST /api/posts (crear post)
+5. 🔲 Implementar GET /api/posts (feed con paginación)
+6. 🔲 Implementar GET /api/posts/[id] (detalle)
+7. 🔲 Implementar PATCH /api/posts/[id] (editar)
+8. 🔲 Implementar DELETE /api/posts/[id] (eliminar)
+9. 🔲 Testear todos los endpoints con Postman o curl
+
+#### Sprint 2.2: UI de Posts (3-4 días)
+**Objetivo:** Crear la interfaz de usuario para posts
+
+**Tareas prioritarias:**
+1. 🔲 Crear componente PostCard
+2. 🔲 Crear página Feed (/) con infinite scroll
+3. 🔲 Crear formulario de nuevo post (/post/new)
+4. 🔲 Implementar upload múltiple de imágenes con preview
+5. 🔲 Agregar selector de ubicación (opcional por ahora)
+6. 🔲 Crear página de detalle /post/[id]
+7. 🔲 Agregar loading skeletons
+8. 🔲 Agregar botones de editar/eliminar (solo para dueño)
+
+**Duración estimada:** 1 semana (6-8 días)
+
+**Criterios de éxito:**
+- ✅ Puedo crear posts con título, descripción e imágenes
+- ✅ Feed muestra todos los posts ordenados por fecha
+- ✅ Puedo ver el detalle de un post
+- ✅ Puedo editar mis posts
+- ✅ Puedo eliminar mis posts
+- ✅ Solo el dueño puede editar/eliminar
+- ✅ Infinite scroll funciona
+- ✅ Responsive en mobile y desktop
 
 ---
 
