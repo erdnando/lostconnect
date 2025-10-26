@@ -30,6 +30,10 @@ interface ImageUploaderProps {
    * Use 'environment' to prefer back camera, 'user' for front, or boolean true.
    */
   capture?: 'environment' | 'user' | boolean;
+  /**
+   * Callback cuando cambia el estado de uploading
+   */
+  onUploadingChange?: (uploading: boolean) => void;
 }
 
 /**
@@ -51,6 +55,7 @@ export const ImageUploader = forwardRef(function ImageUploader(
     maxSizeMB = 5,
     className = '',
     capture,
+    onUploadingChange,
   }: ImageUploaderProps,
   ref
 ) {
@@ -178,6 +183,7 @@ export const ImageUploader = forwardRef(function ImageUploader(
     }
 
     setUploading(true);
+    onUploadingChange?.(true); // Notificar al padre que empezó el upload
 
     try {
       const newImages: UploadedImage[] = [];
@@ -228,6 +234,7 @@ export const ImageUploader = forwardRef(function ImageUploader(
       alert('Error al subir imágenes');
     } finally {
       setUploading(false);
+      onUploadingChange?.(false); // Notificar al padre que terminó el upload
     }
   };
 

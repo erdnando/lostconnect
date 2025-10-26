@@ -26,8 +26,8 @@ import { cn } from '@/lib/utils';
  */
 const postSchema = z.object({
   type: z.enum(['lost', 'found']),
-  title: z.string().min(5, 'El título debe tener al menos 5 caracteres'),
-  description: z.string().min(20, 'La descripción debe tener al menos 20 caracteres'),
+  title: z.string().min(5, 'El título debe tener al menos 5 caracteres').max(50, 'El título no puede exceder 50 caracteres'),
+  description: z.string().min(20, 'La descripción debe tener al menos 20 caracteres').max(255, 'La descripción no puede exceder 255 caracteres'),
   category: z.string().min(1, 'Selecciona una categoría'),
   tags: z.array(z.string()).optional(),
   location: z.object({
@@ -74,10 +74,12 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
   const router = useRouter();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showTypePicker, setShowTypePicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [showImageUploader, setShowImageUploader] = useState(false);
+  const [categoryError, setCategoryError] = useState(false);
   const imageUploaderRef = useRef<any>(null);
   const [currentTag, setCurrentTag] = useState('');
 
@@ -100,15 +102,56 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
   const selectedCategory = watch('category');
   const tags = watch('tags') || [];
   const description = watch('description') || '';
+  const title = watch('title') || '';
+
+  // Validar si el formulario está completo para habilitar el botón "Publicar"
+  const isFormValid = 
+    description.trim().length >= 20 &&
+    title.trim().length >= 5 &&
+    images.length > 0 &&
+    selectedCategory && selectedCategory.trim().length > 0;
+
+  /**
+   * Manejar intento de publicar (puede fallar validaciones)
+   */
+  const handlePublishClick = () => {
+    // Limpiar error previo
+    setCategoryError(false);
+
+    // Validar campos uno por uno con feedback visual
+    if (!description || description.trim().length < 20) {
+      alert('Por favor, escribe una descripción de al menos 20 caracteres.');
+      return;
+    }
+
+    if (!title || title.trim().length < 5) {
+      alert('Por favor, escribe un título de al menos 5 caracteres.');
+      return;
+    }
+
+    if (images.length === 0) {
+      alert('Por favor, agrega al menos una foto de tu objeto.');
+      return;
+    }
+
+    if (!selectedCategory || selectedCategory.trim().length === 0) {
+      // Activar efecto de error en categoría
+      setCategoryError(true);
+      
+      // Quitar el error después de la animación
+      setTimeout(() => setCategoryError(false), 820);
+      
+      return;
+    }
+
+    // Si todo está bien, proceder con el submit
+    handleSubmit(onSubmit)();
+  };
 
   /**
    * Manejar envío del formulario
    */
   const onSubmit = async (data: PostFormData) => {
-    if (images.length === 0) {
-      alert('Debes agregar al menos una imagen');
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -178,9 +221,9 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
             </SheetTitle>
             {/* Botón Post a la derecha */}
             <Button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting || images.length === 0}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+              onClick={handlePublishClick}
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -202,11 +245,24 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
               {...register('description')}
               placeholder="¿Qué pasó? Describe el objeto con detalles: color, marca, modelo, lugar donde lo perdiste o encontraste..."
               rows={4}
+              maxLength={255}
               className="resize-none border-0 focus:ring-0 text-gray-900 placeholder:text-gray-500 text-base p-0"
             />
-            {errors.description && (
-              <p className="text-sm text-red-600">{errors.description.message}</p>
-            )}
+            {/* Contador de caracteres */}
+            <div className="flex items-center justify-between text-xs">
+              {errors.description && (
+                <p className="text-red-600">{errors.description.message}</p>
+              )}
+              <p className={`ml-auto ${
+                description.length < 20 
+                  ? 'text-red-500' 
+                  : description.length > 255 
+                  ? 'text-red-500' 
+                  : 'text-green-600'
+              }`}>
+                {description.length}/255 caracteres {description.length < 20 && `(mínimo 20)`}
+              </p>
+            </div>
           </div>
 
           {/* Área de imagen con overlays (estilo Facebook) */}
@@ -285,6 +341,17 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
               )}
             </div>
 
+            {/* Loading overlay durante upload */}
+            {isUploading && (
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex items-center justify-center z-30 rounded-lg">
+                <div className="text-center">
+                  <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-3" />
+                  <p className="text-sm font-medium text-gray-900">Subiendo imágenes...</p>
+                  <p className="text-xs text-gray-500 mt-1">Comprimiendo y optimizando</p>
+                </div>
+              </div>
+            )}
+
             {/* Overlays de opciones (estilo Facebook - encima de la imagen) */}
             <div className="absolute bottom-3 left-3 right-3 flex gap-2 z-20">
               {/* Tipo de publicación - Dropdown */}
@@ -296,20 +363,17 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                     setShowTypePicker(!showTypePicker);
                     setShowCategoryPicker(false);
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-black text-white rounded-lg shadow-lg text-sm font-medium transition-all hover:bg-gray-800"
                 >
-                  <span className="text-base">
-                    {selectedType === 'lost' ? '🔍' : '✅'}
-                  </span>
-                  <span className="text-gray-900">
+                  <span>
                     {selectedType === 'lost' ? 'Perdido' : 'Encontrado'}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                  <ChevronDown className="h-3.5 w-3.5" />
                 </button>
 
                 {/* Dropdown de tipo */}
                 {showTypePicker && (
-                  <div className="absolute bottom-full mb-2 left-0 w-40 bg-white rounded-lg border border-gray-200 shadow-xl overflow-hidden">
+                  <div className="absolute bottom-full mb-2 left-0 w-40 bg-black text-white rounded-lg shadow-xl overflow-hidden">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -317,12 +381,11 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                         setValue('type', 'lost');
                         setShowTypePicker(false);
                       }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
-                        selectedType === 'lost' ? 'bg-red-50 text-red-700' : 'hover:bg-gray-50'
+                      className={`w-full px-3 py-2 text-sm text-left transition-colors ${
+                        selectedType === 'lost' ? 'bg-gray-700' : 'hover:bg-gray-800'
                       }`}
                     >
-                      <span className="text-base">🔍</span>
-                      <span>Perdido</span>
+                      Perdido
                     </button>
                     <button
                       type="button"
@@ -331,12 +394,11 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                         setValue('type', 'found');
                         setShowTypePicker(false);
                       }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors border-t ${
-                        selectedType === 'found' ? 'bg-green-50 text-green-700' : 'hover:bg-gray-50'
+                      className={`w-full px-3 py-2 text-sm text-left transition-colors border-t border-gray-700 ${
+                        selectedType === 'found' ? 'bg-gray-700' : 'hover:bg-gray-800'
                       }`}
                     >
-                      <span className="text-base">✅</span>
-                      <span>Encontrado</span>
+                      Encontrado
                     </button>
                   </div>
                 )}
@@ -350,25 +412,24 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                     e.stopPropagation();
                     setShowCategoryPicker(!showCategoryPicker);
                     setShowTypePicker(false);
+                    setCategoryError(false); // Limpiar error al interactuar
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 bg-black text-white rounded-lg shadow-lg text-sm font-medium transition-all hover:bg-gray-800",
+                    categoryError && "border-2 border-red-500 animate-shake"
+                  )}
                 >
-                  <span className="text-base">
-                    {selectedCategory
-                      ? CATEGORIES.find((c) => c.value === selectedCategory)?.icon
-                      : '📦'}
-                  </span>
-                  <span className="text-gray-900">
+                  <span>
                     {selectedCategory
                       ? CATEGORIES.find((c) => c.value === selectedCategory)?.label
-                      : 'Categoría'}
+                      : 'Categoría...'}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                  <ChevronDown className="h-3.5 w-3.5" />
                 </button>
 
                 {/* Dropdown de categorías */}
                 {showCategoryPicker && (
-                  <div className="absolute bottom-full mb-2 left-0 w-64 max-h-64 overflow-y-auto bg-white rounded-lg border border-gray-200 shadow-xl">
+                  <div className="absolute bottom-full mb-2 left-0 w-48 max-h-64 overflow-y-auto bg-black text-white rounded-lg shadow-xl">
                     {CATEGORIES.map((cat, idx) => (
                       <button
                         key={cat.value}
@@ -377,22 +438,22 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                           e.stopPropagation();
                           setValue('category', cat.value);
                           setShowCategoryPicker(false);
+                          setCategoryError(false); // Limpiar error al seleccionar
                         }}
-                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+                        className={`w-full px-3 py-2 text-sm text-left transition-colors ${
                           selectedCategory === cat.value
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'hover:bg-gray-50'
-                        } ${idx > 0 ? 'border-t' : ''}`}
+                            ? 'bg-gray-700'
+                            : 'hover:bg-gray-800'
+                        } ${idx > 0 ? 'border-t border-gray-700' : ''}`}
                       >
-                        <span className="text-base">{cat.icon}</span>
-                        <span>{cat.label}</span>
+                        {cat.label}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Botón agregar fotos - SIEMPRE con icono Plus */}
+              {/* Botón agregar fotos - Icon button solo */}
               <button
                 type="button"
                 onClick={(e) => {
@@ -400,10 +461,10 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                   setShowImageUploader(true);
                   setTimeout(() => imageUploaderRef.current?.openFileDialog?.(), 80);
                 }}
-                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
+                className="ml-auto p-2 bg-white/95 hover:bg-white rounded-full shadow-lg border border-gray-200 transition-all"
+                title="Agregar fotos"
               >
-                <Plus className="h-4 w-4" />
-                <span className="text-gray-900">Agregar</span>
+                <Plus className="h-5 w-5 text-gray-700" />
               </button>
             </div>
 
@@ -420,6 +481,7 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
               capture="environment"
               value={images}
               onChange={setImages}
+              onUploadingChange={setIsUploading}
             />
           </div>
 
@@ -430,11 +492,24 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
               id="title"
               {...register('title')}
               placeholder="Ej: Perdí mi mochila azul en el parque"
+              maxLength={50}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder:text-gray-500 text-sm"
             />
-            {errors.title && (
-              <p className="text-sm text-red-600">{errors.title.message}</p>
-            )}
+            {/* Contador de caracteres */}
+            <div className="flex items-center justify-between text-xs">
+              {errors.title && (
+                <p className="text-red-600">{errors.title.message}</p>
+              )}
+              <p className={`ml-auto ${
+                title.length < 5 
+                  ? 'text-red-500' 
+                  : title.length > 50 
+                  ? 'text-red-500' 
+                  : 'text-green-600'
+              }`}>
+                {title.length}/50 caracteres {title.length < 5 && `(mínimo 5)`}
+              </p>
+            </div>
           </div>
 
           {/* Opciones adicionales */}
