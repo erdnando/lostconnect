@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { PostCard } from '@/components/posts/PostCard';
 import { PostCardSkeleton } from '@/components/posts/PostCardSkeleton';
+import { QuickPostToolbar } from '@/components/posts/QuickPostToolbar';
+import { PostCreationDrawer } from '@/components/posts/PostCreationDrawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Filter, Search } from 'lucide-react';
@@ -63,6 +65,7 @@ export function FeedContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
 
   // Cargar posts iniciales
   useEffect(() => {
@@ -133,14 +136,6 @@ export function FeedContent() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {session ? (
-                <Link href="/post/new">
-                  <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium">
-                    <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Nuevo Post</span>
-                  </Button>
-                </Link>
-              ) : null}
               <AuthButton />
             </div>
           </div>
@@ -149,6 +144,11 @@ export function FeedContent() {
 
       {/* Main Content */}
       <main className="container mx-auto max-w-4xl px-4 py-6">
+        {/* QuickPost Toolbar (solo si está autenticado) */}
+        {session && (
+          <QuickPostToolbar onOpenCreatePost={() => setShowCreateDrawer(true)} />
+        )}
+
         {/* Filtros */}
         <div className="mb-6 space-y-4">
           <div className="flex items-center justify-between">
@@ -231,12 +231,13 @@ export function FeedContent() {
                 : `No hay objetos ${filter === 'lost' ? 'perdidos' : 'encontrados'} en este momento`}
             </p>
             {session && (
-              <Link href="/post/new">
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Crear Publicación
-                </Button>
-              </Link>
+              <Button 
+                onClick={() => setShowCreateDrawer(true)} 
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Crear Publicación
+              </Button>
             )}
           </div>
         )}
@@ -250,6 +251,12 @@ export function FeedContent() {
           </div>
         )}
       </main>
+
+      {/* PostCreationDrawer */}
+      <PostCreationDrawer 
+        open={showCreateDrawer} 
+        onOpenChange={setShowCreateDrawer}
+      />
     </>
   );
 }

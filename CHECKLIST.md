@@ -18,8 +18,8 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 - [x] Crear esquemas de validación Zod
 - [x] Crear utilidades básicas (cn, formatDate)
 - [x] Documentación inicial (README, PLAN_MAESTRO, ESTRUCTURA)
-- [ ] Configurar shadcn/ui
-- [ ] Crear componentes UI base
+- [x] Configurar shadcn/ui
+- [x] Crear componentes UI base (Button, Input, Card, Badge, etc.)
 - [ ] Configurar Git hooks (opcional)
 
 ### Sprint 1.2: Autenticación
@@ -59,30 +59,39 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 - [x] Corregir middleware para permitir rutas API
 
 ### Sprint 2.2: UI de Posts
-- [ ] Crear componente PostCard
-- [ ] Crear página Feed (/)
-- [ ] Implementar infinite scroll
-- [ ] Crear loading skeletons
-- [ ] Crear empty state
-- [ ] Crear PostForm
-- [ ] Implementar React Hook Form + Zod
-- [ ] Crear ImageUploader con preview
-- [ ] Crear selector de ubicación
-- [ ] Crear página /post/new
-- [ ] Crear página /post/[id]
-- [ ] Crear PostGallery
-- [ ] Crear PostActions (edit, delete)
-- [ ] Implementar confirmación de eliminación
+- [x] Configurar shadcn/ui
+- [x] Crear componente PostCard
+- [x] Crear página Feed (/)
+- [x] Implementar filtros (Todos/Perdidos/Encontrados)
+- [x] Crear loading skeletons
+- [x] Crear empty state
+- [x] Crear PostForm
+- [x] Implementar React Hook Form + Zod
+- [x] Crear ImageUploader con Cloudinary
+- [x] Crear selector de ubicación
+- [x] Crear página /post/new
+- [x] Crear página /post/[id]
+- [x] Deploy a Vercel
+- [x] Corregir errores de OAuth en producción
+- [x] Arreglar Cloudinary upload error
+- [x] Mejorar contraste de textos (inputs, postcards, detalle)
+
+**Sprint 2.3: UX Mejorado (Estilo Facebook)**
+- [ ] Crear QuickPostToolbar (avatar + input → modal)
+- [ ] Crear PostCreationDrawer (modal estilo Facebook)
+- [ ] Rediseñar ImageUploader estilo Facebook
+- [ ] Crear LocationPicker mejorado (Check-in)
+- [ ] Refactor CategorySelector (opcional: multi-select)
 
 **Criterios de Aceptación Fase 2:**
-- [ ] Feed muestra posts correctamente
-- [ ] Infinite scroll funciona
-- [ ] Puedo crear posts con imágenes
-- [ ] Puedo editar mis posts
-- [ ] Puedo eliminar mis posts
-- [ ] Solo owner puede editar/eliminar
-- [ ] Validaciones funcionan
-- [ ] Responsive en mobile
+- [x] Feed muestra posts correctamente
+- [x] Puedo crear posts con imágenes
+- [x] Validaciones funcionan
+- [x] Responsive en mobile
+- [x] Deployed en Vercel
+- [ ] QuickPost toolbar funciona
+- [ ] Modal de creación estilo Facebook
+- [ ] ImageUploader mejorado
 
 ---
 
@@ -321,60 +330,67 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 
 ```
 FASE 1: Setup y Fundación      [██████████] 100% ✅
-FASE 2: Posts                   [░░░░░░░░░░]   0%
+FASE 2: Posts                   [████████░░]  80% 🔄
 FASE 3: Interacciones           [░░░░░░░░░░]   0%
 FASE 4: Perfil y Polish         [░░░░░░░░░░]   0%
-Deployment                      [░░░░░░░░░░]   0%
+Deployment                      [████████░░]  80% ✅
 
-TOTAL MVP                       [██░░░░░░░░] 20%
+TOTAL MVP                       [████░░░░░░]  40%
 ```
 
 ---
 
-## 🎯 PRÓXIMO PASO: FASE 2 - Posts
+## 🎯 PRÓXIMO PASO: Sprint 2.3 - UX Mejorado (Facebook-style)
 
 ### ¿Qué sigue ahora?
 
-Según el Plan Maestro, debes iniciar **FASE 2: Core Features - Posts (Semana 3-4)**
+Mejorar la experiencia de creación de posts con un diseño más moderno y usable, inspirado en Facebook.
 
-#### Sprint 2.1: API de Posts (3-4 días)
-**Objetivo:** Crear el backend para manejar posts (reportes de objetos perdidos/encontrados)
-
-**Tareas prioritarias:**
-1. ✅ Modelo Post ya existe (creado en Fase 1)
-2. 🔲 Configurar Cloudinary para subir imágenes
-3. 🔲 Crear servicio de upload de imágenes
-4. 🔲 Implementar POST /api/posts (crear post)
-5. 🔲 Implementar GET /api/posts (feed con paginación)
-6. 🔲 Implementar GET /api/posts/[id] (detalle)
-7. 🔲 Implementar PATCH /api/posts/[id] (editar)
-8. 🔲 Implementar DELETE /api/posts/[id] (eliminar)
-9. 🔲 Testear todos los endpoints con Postman o curl
-
-#### Sprint 2.2: UI de Posts (3-4 días)
-**Objetivo:** Crear la interfaz de usuario para posts
+#### Sprint 2.3: UX Mejorado - Toolbar y Modal (2-3 días)
+**Objetivo:** Modernizar la UI de creación de posts
 
 **Tareas prioritarias:**
-1. 🔲 Crear componente PostCard
-2. 🔲 Crear página Feed (/) con infinite scroll
-3. 🔲 Crear formulario de nuevo post (/post/new)
-4. 🔲 Implementar upload múltiple de imágenes con preview
-5. 🔲 Agregar selector de ubicación (opcional por ahora)
-6. 🔲 Crear página de detalle /post/[id]
-7. 🔲 Agregar loading skeletons
-8. 🔲 Agregar botones de editar/eliminar (solo para dueño)
+1. 🔲 Crear QuickPostToolbar component
+   - Avatar del usuario + input placeholder
+   - Botón con ícono de 'post'
+   - onClick abre modal
+   
+2. 🔲 Crear PostCreationDrawer component
+   - Modal/Drawer estilo Facebook
+   - Header con X y botón 'Post'
+   - Tipo Lost/Found como chips
+   - Textarea para descripción
+   - Bottom sheet con opciones
+   
+3. 🔲 Rediseñar ImageUploader
+   - Look & feel de Facebook
+   - Grid preview de imágenes
+   - Botón 'Add photos'
+   - Eliminar imágenes individuales
+   
+4. 🔲 Crear LocationPicker (Check-in style)
+   - Ícono 📍
+   - Input de búsqueda
+   - Guardar en post.location
 
-**Duración estimada:** 1 semana (6-8 días)
+5. 🔲 (Opcional) CategorySelector multi-select
+   - Chips multi-seleccionables
+   - Fusionar categoría + tags
+   - ⚠️ Requiere cambio en schema
+
+**Duración estimada:** 2-3 días (8-12 horas)
 
 **Criterios de éxito:**
-- ✅ Puedo crear posts con título, descripción e imágenes
-- ✅ Feed muestra todos los posts ordenados por fecha
-- ✅ Puedo ver el detalle de un post
-- ✅ Puedo editar mis posts
-- ✅ Puedo eliminar mis posts
-- ✅ Solo el dueño puede editar/eliminar
-- ✅ Infinite scroll funciona
+- ✅ Click en QuickPostToolbar abre modal
+- ✅ Modal tiene diseño moderno tipo Facebook
+- ✅ ImageUploader con mejor UX
+- ✅ LocationPicker funcional
 - ✅ Responsive en mobile y desktop
+
+**Pendiente para Fase 3:**
+- Sistema de comentarios
+- Sistema de reacciones
+- Tag People (complejidad alta)
 
 ---
 

@@ -48,6 +48,77 @@ export function ImageUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
+   * Comprime una imagen antes de subirla
+   * Reduce el tamaño manteniendo calidad aceptable (estilo WhatsApp)
+   */
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.src = event.target?.result as string;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            reject(new Error('No se pudo obtener contexto del canvas'));
+            return;
+          }
+
+          // Dimensiones máximas (WhatsApp usa ~1600px)
+          const MAX_WIDTH = 1600;
+          const MAX_HEIGHT = 1600;
+          
+          let width = img.width;
+          let height = img.height;
+
+          // Calcular nuevas dimensiones manteniendo aspect ratio
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+
+          // Establecer dimensiones del canvas
+          canvas.width = width;
+          canvas.height = height;
+
+          // Dibujar imagen redimensionada
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Comprimir (0.8 = 80% calidad, buen balance calidad/tamaño)
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          
+          // Log del tamaño para debugging
+          const originalSize = (file.size / 1024 / 1024).toFixed(2);
+          const compressedSize = (compressedBase64.length * 0.75 / 1024 / 1024).toFixed(2);
+          console.log(`📸 Imagen comprimida: ${originalSize}MB → ${compressedSize}MB`);
+          
+          resolve(compressedBase64);
+        };
+        
+        img.onerror = () => {
+          reject(new Error('Error al cargar imagen'));
+        };
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Error al leer archivo'));
+      };
+    });
+  };
+
+  /**
    * Convierte un archivo a base64
    */
   const fileToBase64 = (file: File): Promise<string> => {
@@ -72,12 +143,12 @@ export function ImageUploader({
       };
     }
 
-    // Validar tamaño
-    const maxSize = maxSizeMB * 1024 * 1024; // MB a bytes
+    // Validar tamaño (aumentado a 20MB porque comprimiremos)
+    const maxSize = 20 * 1024 * 1024; // 20MB antes de comprimir
     if (file.size > maxSize) {
       return {
         valid: false,
-        error: `El archivo es demasiado grande. Máximo ${maxSizeMB}MB`,
+        error: `El archivo es demasiado grande. Máximo 20MB`,
       };
     }
 
@@ -113,8 +184,8 @@ export function ImageUploader({
         // Crear preview local
         const preview = URL.createObjectURL(file);
 
-        // Convertir a base64 para subir
-        const base64 = await fileToBase64(file);
+        // Comprimir imagen antes de subir
+        const compressedBase64 = await compressImage(file);
 
         // Subir a Cloudinary
         const response = await fetch('/api/upload', {
@@ -122,7 +193,7 @@ export function ImageUploader({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ image: base64 }),
+          body: JSON.stringify({ image: compressedBase64 }),
         });
 
         const data = await response.json();
@@ -247,7 +318,10 @@ export function ImageUploader({
                 Arrastra imágenes aquí o haz clic para seleccionar
               </p>
               <p className="text-xs text-gray-500">
-                JPG, PNG, WebP, GIF • Máximo {maxSizeMB}MB • Hasta {maxImages} imágenes
+                JPG, PNG, WebP, GIF • Hasta {maxImages} imágenes
+              </p>
+              <p className="text-xs text-gray-400">
+                Las imágenes se comprimen automáticamente para carga más rápida
               </p>
             </div>
           )}

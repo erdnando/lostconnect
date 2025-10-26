@@ -109,25 +109,25 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      CLIENTE (Browser)                       │
-│  ┌────────────┐  ┌────────────┐  ┌──────────────────────┐  │
-│  │   Mobile   │  │  Tablet    │  │      Desktop         │  │
-│  └────────────┘  └────────────┘  └──────────────────────┘  │
+│                      CLIENTE (Browser)                      │
+│  ┌────────────┐  ┌────────────┐  ┌──────────────────────┐   │
+│  │   Mobile   │  │  Tablet    │  │      Desktop         │   │
+│  └────────────┘  └────────────┘  └──────────────────────┘   │
 └───────────────────────────┬─────────────────────────────────┘
                             │ HTTPS
 ┌───────────────────────────▼─────────────────────────────────┐
-│                    NEXT.JS APPLICATION                       │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              APP ROUTER (Pages)                       │  │
-│  │  /          /auth        /profile      /post/[id]    │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         SERVER COMPONENTS + CLIENT COMPONENTS         │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              API ROUTES (/api/*)                      │  │
-│  │  /posts   /comments   /reactions   /upload           │  │
-│  └──────────────────────────────────────────────────────┘  │
+│                    NEXT.JS APPLICATION                      │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │              APP ROUTER (Pages)                      │   │
+│  │  /          /auth        /profile      /post/[id]    │   │
+│  └──────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │         SERVER COMPONENTS + CLIENT COMPONENTS        │   │
+│  └──────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │              API ROUTES (/api/*)                     │   │
+│  │  /posts   /comments   /reactions   /upload           │   │
+│  └──────────────────────────────────────────────────────┘   │
 └───────────────┬──────────────────────┬──────────────────────┘
                 │                      │
     ┌───────────▼──────────┐  ┌────────▼──────────┐
@@ -753,26 +753,39 @@ Usuario       Next.js       API Route       MongoDB
 
 #### **FASE 2: Core Features - Posts (Semana 3-4)**
 
-**Sprint 2.1: Modelo y API de Posts**
-- Crear modelo de Post (Mongoose)
-- Implementar API GET /api/posts (feed)
-- Implementar API POST /api/posts
-- Implementar API GET /api/posts/[id]
-- Configurar Cloudinary para imágenes
-- Crear servicio de upload
+**Sprint 2.1: Modelo y API de Posts** ✅
+- ✅ Crear modelo de Post (Mongoose)
+- ✅ Implementar API GET /api/posts (feed)
+- ✅ Implementar API POST /api/posts
+- ✅ Implementar API GET /api/posts/[id]
+- ✅ Configurar Cloudinary para imágenes
+- ✅ Crear servicio de upload
+- ✅ Implementar PATCH /api/posts/[id]
+- ✅ Implementar DELETE /api/posts/[id]
 
-**Sprint 2.2: UI de Posts**
-- Crear componente PostCard
-- Crear página de Feed (/)
-- Crear formulario de nuevo post (/post/new)
-- Implementar upload de múltiples imágenes
-- Agregar selector de ubicación (mapa simple)
-- Crear página de detalle de post
+**Sprint 2.2: UI de Posts** ✅
+- ✅ Crear componente PostCard
+- ✅ Crear página de Feed (/)
+- ✅ Crear formulario de nuevo post (/post/new)
+- ✅ Implementar upload de múltiples imágenes
+- ✅ Agregar selector de ubicación
+- ✅ Crear página de detalle de post
+- ✅ Deploy inicial a Vercel
+- ✅ Corregir bugs de producción (OAuth, Cloudinary, contraste)
+
+**Sprint 2.3: UX Mejorado (Facebook-style)** 🔄
+- [ ] Crear QuickPostToolbar (avatar + input → modal)
+- [ ] Crear PostCreationDrawer (modal estilo Facebook)
+- [ ] Rediseñar ImageUploader con look & feel moderno
+- [ ] Crear LocationPicker mejorado (Check-in style)
+- [ ] (Opcional) Refactor CategorySelector a multi-select
 
 **Entregables Fase 2:**
-- Usuarios pueden crear reportes
-- Feed funcional con lista de posts
-- Subida de imágenes operativa
+- ✅ Usuarios pueden crear reportes
+- ✅ Feed funcional con lista de posts
+- ✅ Subida de imágenes operativa
+- ✅ Deployed en producción (Vercel)
+- [ ] UX mejorada estilo redes sociales modernas
 
 ---
 
@@ -834,12 +847,14 @@ Usuario       Next.js       API Route       MongoDB
 ### 9.2 Timeline Estimado
 
 ```
-Semana 1-2:  Setup + Auth
-Semana 3-4:  Posts (crear, ver, listar)
-Semana 5-6:  Comentarios + Reacciones
-Semana 7-8:  Perfil + UX Polish
+Semana 1-2:  Setup + Auth                    ✅ COMPLETADO
+Semana 3-4:  Posts (crear, ver, listar)      🔄 80% COMPLETADO
+            Sprint 2.3 en progreso (UX Mejorado)
+Semana 5-6:  Comentarios + Reacciones        ⏳ PENDIENTE
+Semana 7-8:  Perfil + UX Polish              ⏳ PENDIENTE
 
 TOTAL: 2 meses para MVP completo
+PROGRESO ACTUAL: ~40% (4 de 8 semanas)
 ```
 
 ### 9.3 Priorización de Features (MoSCoW)
@@ -989,7 +1004,43 @@ font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
 ### 11.4 Componentes UI Clave
 
-#### 11.4.1 PostCard (Tarjeta de Reporte)
+#### 11.4.1 QuickPostToolbar (Nuevo - Sprint 2.3)
+
+```
+┌─────────────────────────────────────┐
+│ [@avatar] ¿Qué perdiste/encontraste?│ [✏️]
+└─────────────────────────────────────┘
+```
+- Inspirado en Facebook
+- Click → Abre PostCreationDrawer
+- Avatar del usuario actual
+- Input fake (solo visual)
+
+#### 11.4.2 PostCreationDrawer (Nuevo - Sprint 2.3)
+
+```
+┌─────────────────────────────────────┐
+│ [X]  Crear Publicación       [Post] │
+├─────────────────────────────────────┤
+│ [@avatar] Erdnando Rodriguez        │
+│ [🔍 Perdido ▼] [📍 Público ▼]      │
+├─────────────────────────────────────┤
+│ What's on your mind?                │
+│ [Describe el objeto con detalle...] │
+│                                     │
+├─────────────────────────────────────┤
+│ 📷 Photo/video                      │
+│ 👥 Tag people (Fase 2)              │
+│ 📍 Check in                         │
+│ 🏷️  Categoría                       │
+└─────────────────────────────────────┘
+```
+- Modal/Drawer tipo Facebook
+- Bottom sheet con opciones
+- Tipo Lost/Found como chips
+- Categorías visuales
+
+#### 11.4.3 PostCard (Actual)
 
 ```
 ┌─────────────────────────────────────┐
@@ -1006,7 +1057,7 @@ font-family: 'Inter', system-ui, -apple-system, sans-serif;
 └─────────────────────────────────────┘
 ```
 
-#### 11.4.2 CommentSection (Sección de Comentarios)
+#### 11.4.4 CommentSection (Sección de Comentarios - Fase 3)
 
 ```
 ┌─────────────────────────────────────┐
@@ -1026,7 +1077,7 @@ font-family: 'Inter', system-ui, -apple-system, sans-serif;
 └─────────────────────────────────────┘
 ```
 
-#### 11.4.3 CreatePostForm (Formulario de Creación)
+#### 11.4.5 CreatePostForm (Formulario Actual - A reemplazar por Drawer)
 
 ```
 ┌─────────────────────────────────────┐
@@ -1057,17 +1108,20 @@ font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
 ### 11.5 Flujos de Usuario (User Flows)
 
-#### Flujo 1: Primera Visita
+#### Flujo 1: Primera Visita ✅
 ```
-Landing Page → Click "Entrar" → Google OAuth → Feed con tutorial tooltip
-```
-
-#### Flujo 2: Crear Primer Reporte
-```
-Feed → Botón "+" → Formulario guiado → Confirmación → Ver en feed
+Landing Page → Click "Entrar" → Google OAuth → Feed con posts
 ```
 
-#### Flujo 3: Interactuar con Reporte
+#### Flujo 2: Crear Primer Reporte (Nuevo - Sprint 2.3) 🔄
+```
+Feed → Click en QuickPostToolbar → Drawer abre → 
+Seleccionar tipo (Lost/Found) → Escribir descripción →
+Agregar fotos → Agregar ubicación (Check-in) → 
+Seleccionar categoría → Click "Post" → Ver en feed
+```
+
+#### Flujo 3: Interactuar con Reporte (Fase 3)
 ```
 Feed → Click en Post → Ver detalles → Scroll a comentarios → Agregar comentario → Ver actualizado
 ```
@@ -1246,7 +1300,122 @@ Dado que es un proyecto escolar con tiempo limitado, priorizamos:
 
 ## 14. Fases Futuras
 
-### 14.1 Fase 2: Mejoras y Features Avanzadas (Meses 3-4)
+### 14.1 Sprint 2.3: UX Mejorado (Facebook-inspired) - EN PROGRESO 🔄
+
+**Objetivo:** Modernizar la experiencia de creación de posts con interfaz tipo redes sociales.
+
+**Inspiración:** Facebook/Instagram post creation flow
+
+#### Componentes a Crear:
+
+1. **QuickPostToolbar**
+   - Avatar del usuario + Input placeholder
+   - Botón de "Post" con ícono
+   - Al hacer click → Abre PostCreationDrawer
+   - Ubicación: Arriba del feed principal
+   - **Complejidad:** Baja (1-2 horas)
+
+2. **PostCreationDrawer**
+   - Modal/Drawer tipo Facebook
+   - Header: [X] Título [Post]
+   - Avatar + nombre de usuario
+   - Tipo Lost/Found como chips seleccionables
+   - Textarea: "What's on your mind?"
+   - Bottom sheet con opciones expandibles
+   - **Complejidad:** Media (3-4 horas)
+
+3. **ImageUploader Redesign**
+   - Grid preview de imágenes
+   - Botón "Add photos/videos"
+   - Poder eliminar imágenes individuales
+   - Drag and drop (opcional)
+   - Look & feel moderno
+   - **Complejidad:** Media (2-3 horas)
+
+4. **LocationPicker (Check-in style)**
+   - Modal/sheet para seleccionar ubicación
+   - Ícono 📍
+   - Input de búsqueda (simple)
+   - Opción de usar ubicación actual (opcional)
+   - Guardar en post.location
+   - **Complejidad:** Media (2-3 horas)
+
+5. **CategorySelector Multi-select (Opcional)**
+   - Chips multi-seleccionables
+   - Reemplazar dropdown único
+   - Fusionar concepto de categoría + tags
+   - ⚠️ **REQUIERE:** Modificar schema Post (categories: string → string[])
+   - ⚠️ **REQUIERE:** Migración de datos existentes
+   - **Complejidad:** Media-Alta (3-4 horas + backend)
+   - **Decisión:** ¿Implementar ahora o dejarlo para Fase 3?
+
+#### Opciones de Implementación:
+
+**Opción A - Rápida (Recomendada para MVP):**
+- ✅ QuickPostToolbar
+- ✅ PostCreationDrawer
+- ✅ ImageUploader redesign
+- ✅ LocationPicker
+- ❌ NO cambiar schema (mantener categoría única)
+- **Tiempo:** 8-10 horas
+- **Riesgo:** Bajo
+- **Beneficio:** UX moderna sin complejidad backend
+
+**Opción B - Completa (Más robusta):**
+- ✅ Todo lo de Opción A
+- ✅ Multi-categorías (cambio de schema)
+- ⚠️ Migración de datos
+- ⚠️ Actualizar queries y APIs
+- **Tiempo:** 12-16 horas
+- **Riesgo:** Medio
+- **Beneficio:** Sistema más flexible
+
+#### Tag People (Fase 2 - Pospuesto):
+
+**Complejidad:** Alta (5-8 horas)
+
+**Requiere:**
+- Modificar Post schema: `taggedUsers: ObjectId[]`
+- Endpoint GET /api/users/search?q=name
+- Componente de búsqueda de usuarios
+- Mostrar usuarios etiquetados en el post
+- Sistema de permisos/privacidad
+- Notificaciones (opcional)
+
+**Decisión:** Implementar en Fase 3 junto con notificaciones
+
+#### Timeline Estimado Sprint 2.3:
+
+```
+Día 1 (3-4 horas):
+  - QuickPostToolbar (1-2h)
+  - Inicio PostCreationDrawer (2h)
+
+Día 2 (3-4 horas):
+  - Completar PostCreationDrawer (2h)
+  - ImageUploader redesign (2h)
+
+Día 3 (2-3 horas):
+  - LocationPicker (2-3h)
+  - Testing e integración (1h)
+
+TOTAL: 8-11 horas (2-3 días)
+```
+
+#### Criterios de Aceptación:
+
+- [ ] QuickPostToolbar se muestra en el feed
+- [ ] Click en QuickPostToolbar abre PostCreationDrawer
+- [ ] PostCreationDrawer tiene diseño moderno tipo Facebook
+- [ ] Puedo seleccionar tipo Lost/Found con chips
+- [ ] ImageUploader tiene mejor UX
+- [ ] Puedo agregar ubicación con LocationPicker
+- [ ] Todo funciona en mobile y desktop
+- [ ] No hay regresiones en funcionalidad existente
+
+---
+
+### 14.2 Fase 2: Mejoras y Features Avanzadas (Meses 3-4)
 
 **Features:**
 - 🔔 Notificaciones en tiempo real (Socket.io o Pusher)
