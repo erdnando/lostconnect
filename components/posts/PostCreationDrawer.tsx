@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -18,7 +18,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader, UploadedImage } from '@/components/posts/ImageUploader';
-import { X, Loader2, ImageIcon, MapPin, Tag as TagIcon } from 'lucide-react';
+import { X, Loader2, ImageIcon, MapPin, Tag as TagIcon, Plus, Camera, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
  * Schema de validación
@@ -74,7 +75,10 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showTypePicker, setShowTypePicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showImageUploader, setShowImageUploader] = useState(false);
+  const imageUploaderRef = useRef<any>(null);
   const [currentTag, setCurrentTag] = useState('');
 
   const {
@@ -165,7 +169,7 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="bottom" 
-        className="h-[95vh] sm:h-[90vh] overflow-y-auto bg-white border-t"
+        className="h-[92vh] overflow-y-auto bg-white border-t rounded-t-2xl"
       >
         <SheetHeader className="border-b pb-4 mb-4">
           <div className="flex items-center justify-between">
@@ -190,219 +194,329 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
           </div>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-2">
-          {/* Tipo: Lost/Found como chips */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
+          {/* Descripción principal (estilo "What's on your mind?" de Facebook) */}
           <div className="space-y-2">
-            <Label className="text-gray-900">Tipo de publicación *</Label>
-            <div className="flex gap-3">
+            <Textarea
+              id="description"
+              {...register('description')}
+              placeholder="¿Qué pasó? Describe el objeto con detalles: color, marca, modelo, lugar donde lo perdiste o encontraste..."
+              rows={4}
+              className="resize-none border-0 focus:ring-0 text-gray-900 placeholder:text-gray-500 text-base p-0"
+            />
+            {errors.description && (
+              <p className="text-sm text-red-600">{errors.description.message}</p>
+            )}
+          </div>
+
+          {/* Área de imagen con overlays (estilo Facebook) */}
+          <div className="relative">
+            {/* Imagen o placeholder - CLICKEABLE para abrir cámara */}
+            <div 
+              className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 border border-gray-300 cursor-pointer"
+              onClick={() => {
+                if (images.length === 0) {
+                  setShowImageUploader(true);
+                  setTimeout(() => imageUploaderRef.current?.openFileDialog?.(), 80);
+                }
+              }}
+            >
+              {images.length > 0 ? (
+                /* Grid de imágenes cuando hay fotos subidas */
+                <div className={cn(
+                  "grid gap-1 h-full",
+                  images.length === 1 && "grid-cols-1",
+                  images.length === 2 && "grid-cols-2",
+                  images.length >= 3 && "grid-cols-2"
+                )}>
+                  {images.slice(0, 4).map((image, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "relative",
+                        images.length === 3 && index === 0 && "col-span-2"
+                      )}
+                    >
+                      <Image
+                        src={image.preview || image.url}
+                        alt={`Imagen ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 50vw"
+                      />
+                      
+                      {/* Botón eliminar en cada imagen */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newImages = [...images];
+                          const removed = newImages.splice(index, 1)[0];
+                          if (removed.preview) {
+                            URL.revokeObjectURL(removed.preview);
+                          }
+                          setImages(newImages);
+                        }}
+                        className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-lg z-10"
+                      >
+                        <X className="h-4 w-4 text-gray-700" />
+                      </button>
+
+                      {/* Mostrar "+N más" si hay más de 4 imágenes */}
+                      {index === 3 && images.length > 4 && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-white">
+                            +{images.length - 4}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* Placeholder cuando no hay fotos - CLICKEABLE */
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 transition-colors">
+                  <div className="text-center">
+                    <Camera className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500 font-medium">Agrega fotos de tu objeto</p>
+                    <p className="text-xs text-gray-400 mt-1">Toca para tomar foto o seleccionar</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Overlays de opciones (estilo Facebook - encima de la imagen) */}
+            <div className="absolute bottom-3 left-3 right-3 flex gap-2 z-20">
+              {/* Tipo de publicación - Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowTypePicker(!showTypePicker);
+                    setShowCategoryPicker(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
+                >
+                  <span className="text-base">
+                    {selectedType === 'lost' ? '🔍' : '✅'}
+                  </span>
+                  <span className="text-gray-900">
+                    {selectedType === 'lost' ? 'Perdido' : 'Encontrado'}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                </button>
+
+                {/* Dropdown de tipo */}
+                {showTypePicker && (
+                  <div className="absolute bottom-full mb-2 left-0 w-40 bg-white rounded-lg border border-gray-200 shadow-xl overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setValue('type', 'lost');
+                        setShowTypePicker(false);
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+                        selectedType === 'lost' ? 'bg-red-50 text-red-700' : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="text-base">🔍</span>
+                      <span>Perdido</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setValue('type', 'found');
+                        setShowTypePicker(false);
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors border-t ${
+                        selectedType === 'found' ? 'bg-green-50 text-green-700' : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="text-base">✅</span>
+                      <span>Encontrado</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Categoría - Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCategoryPicker(!showCategoryPicker);
+                    setShowTypePicker(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
+                >
+                  <span className="text-base">
+                    {selectedCategory
+                      ? CATEGORIES.find((c) => c.value === selectedCategory)?.icon
+                      : '📦'}
+                  </span>
+                  <span className="text-gray-900">
+                    {selectedCategory
+                      ? CATEGORIES.find((c) => c.value === selectedCategory)?.label
+                      : 'Categoría'}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                </button>
+
+                {/* Dropdown de categorías */}
+                {showCategoryPicker && (
+                  <div className="absolute bottom-full mb-2 left-0 w-64 max-h-64 overflow-y-auto bg-white rounded-lg border border-gray-200 shadow-xl">
+                    {CATEGORIES.map((cat, idx) => (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setValue('category', cat.value);
+                          setShowCategoryPicker(false);
+                        }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+                          selectedCategory === cat.value
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'hover:bg-gray-50'
+                        } ${idx > 0 ? 'border-t' : ''}`}
+                      >
+                        <span className="text-base">{cat.icon}</span>
+                        <span>{cat.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Botón agregar fotos - SIEMPRE con icono Plus */}
               <button
                 type="button"
-                onClick={() => setValue('type', 'lost')}
-                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
-                  selectedType === 'lost'
-                    ? 'border-red-500 bg-red-50 text-red-700'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowImageUploader(true);
+                  setTimeout(() => imageUploaderRef.current?.openFileDialog?.(), 80);
+                }}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white rounded-lg shadow-lg border border-gray-200 text-sm font-medium transition-all"
               >
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-2xl">🔍</span>
-                  <span className="font-medium">Perdido</span>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setValue('type', 'found')}
-                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
-                  selectedType === 'found'
-                    ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-2xl">✅</span>
-                  <span className="font-medium">Encontrado</span>
-                </div>
+                <Plus className="h-4 w-4" />
+                <span className="text-gray-900">Agregar</span>
               </button>
             </div>
+
+            {/* Validación de errores */}
+            {errors.category && (
+              <p className="text-sm text-red-600 mt-2">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* ImageUploader oculto (solo para funcionalidad) */}
+          <div className="hidden">
+            <ImageUploader
+              ref={imageUploaderRef}
+              capture="environment"
+              value={images}
+              onChange={setImages}
+            />
           </div>
 
           {/* Título */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-gray-900">Título *</Label>
+            <Label htmlFor="title" className="text-sm text-gray-700">Título *</Label>
             <input
               id="title"
               {...register('title')}
-              placeholder="Ej: Perdí mi mochila azul"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder:text-gray-500"
+              placeholder="Ej: Perdí mi mochila azul en el parque"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder:text-gray-500 text-sm"
             />
             {errors.title && (
               <p className="text-sm text-red-600">{errors.title.message}</p>
             )}
           </div>
 
-          {/* Descripción - "What's on your mind?" */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-gray-900">¿Qué pasó? *</Label>
-            <Textarea
-              id="description"
-              {...register('description')}
-              placeholder="Describe el objeto con el mayor detalle posible: color, marca, modelo, características especiales, lugar donde se perdió/encontró..."
-              rows={5}
-              className="resize-none"
-            />
-            <div className="flex items-center justify-between">
-              {errors.description && (
-                <p className="text-sm text-red-600">{errors.description.message}</p>
-              )}
-              <p className="text-xs text-gray-500 ml-auto">
-                {description.length} caracteres
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom Sheet - Opciones */}
-          <div className="space-y-3 border-t pt-4">
-            <p className="text-sm font-medium text-gray-900">Agregar a tu publicación</p>
-
-            {/* Fotos */}
-            <button
-              type="button"
-              onClick={() => setShowCategoryPicker(false)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
-            >
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <ImageIcon className="h-5 w-5 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">Foto/video</p>
-                <p className="text-xs text-gray-600">
-                  {images.length > 0 ? `${images.length} imagen(es)` : 'Agregar imágenes'}
-                </p>
-              </div>
-            </button>
-
-            {/* Mostrar ImageUploader */}
-            <div className="mt-2">
-              <ImageUploader value={images} onChange={setImages} />
-            </div>
-
-            {/* Categoría */}
-            <button
-              type="button"
-              onClick={() => setShowCategoryPicker(!showCategoryPicker)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
-            >
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <TagIcon className="h-5 w-5 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">Categoría</p>
-                <p className="text-xs text-gray-600">
-                  {selectedCategory
-                    ? CATEGORIES.find((c) => c.value === selectedCategory)?.label
-                    : 'Seleccionar categoría'}
-                </p>
-              </div>
-            </button>
-
-            {/* Selector de categorías */}
-            {showCategoryPicker && (
-              <div className="grid grid-cols-2 gap-2 p-2 bg-gray-50 rounded-lg">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.value}
-                    type="button"
-                    onClick={() => {
-                      setValue('category', cat.value);
-                      setShowCategoryPicker(false);
-                    }}
-                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                      selectedCategory === cat.value
-                        ? 'bg-blue-100 border-2 border-blue-500'
-                        : 'bg-white hover:bg-gray-100 border border-gray-200'
-                    }`}
-                  >
-                    <span className="text-xl">{cat.icon}</span>
-                    <span className="text-sm font-medium text-gray-900">{cat.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-            {errors.category && (
-              <p className="text-sm text-red-600 px-3">{errors.category.message}</p>
-            )}
-
-            {/* Ubicación (Check-in) - Placeholder por ahora */}
+          {/* Opciones adicionales */}
+          <div className="space-y-2 border-t pt-3">
+            <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">Opciones adicionales</p>
+            
+            {/* Ubicación */}
             <button
               type="button"
               onClick={() => setShowLocationPicker(!showLocationPicker)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
             >
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <MapPin className="h-5 w-5 text-red-600" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">Ubicación</p>
-                <p className="text-xs text-gray-600">Agregar ubicación (opcional)</p>
-              </div>
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-700">Agregar ubicación</span>
             </button>
 
             {/* Location picker simple */}
             {showLocationPicker && (
-              <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
+              <div className="space-y-2 pl-6">
                 <input
                   type="text"
                   placeholder="Ciudad"
                   {...register('location.city')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 text-sm"
                 />
                 <input
                   type="text"
                   placeholder="Estado/Provincia"
                   {...register('location.state')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 text-sm"
                 />
                 <input
                   type="text"
                   placeholder="País"
                   {...register('location.country')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 text-sm"
                 />
               </div>
             )}
 
             {/* Tags */}
-            <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
-              <Label className="text-gray-900">Etiquetas (opcional)</Label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={currentTag}
-                  onChange={(e) => setCurrentTag(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  placeholder="Agregar etiqueta..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm placeholder:text-gray-500"
-                />
-                <Button type="button" onClick={addTag} size="sm">
-                  Agregar
-                </Button>
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="gap-1 bg-gray-200 text-gray-900">
-                      #{tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 hover:text-red-600"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {}}
+                className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              >
+                <TagIcon className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-700">Agregar etiquetas</span>
+              </button>
+              
+              <div className="pl-6 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={currentTag}
+                    onChange={(e) => setCurrentTag(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    placeholder="Ej: urgente, recompensa, centro..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm placeholder:text-gray-400"
+                  />
+                  <Button type="button" onClick={addTag} size="sm" variant="outline">
+                    +
+                  </Button>
                 </div>
-              )}
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="gap-1 bg-blue-100 text-blue-700 text-xs">
+                        #{tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="ml-0.5 hover:text-red-600"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </form>

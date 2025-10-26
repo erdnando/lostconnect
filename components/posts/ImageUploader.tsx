@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { X, Upload, Loader2 } from 'lucide-react';
@@ -24,6 +24,12 @@ interface ImageUploaderProps {
   onChange: (images: UploadedImage[]) => void;
   maxImages?: number;
   maxSizeMB?: number;
+  className?: string;
+  /**
+   * If provided, enables the capture attribute on the file input.
+   * Use 'environment' to prefer back camera, 'user' for front, or boolean true.
+   */
+  capture?: 'environment' | 'user' | boolean;
 }
 
 /**
@@ -37,12 +43,17 @@ interface ImageUploaderProps {
  * - Upload a Cloudinary
  * - Eliminación de imágenes
  */
-export function ImageUploader({
-  value = [],
-  onChange,
-  maxImages = 5,
-  maxSizeMB = 5,
-}: ImageUploaderProps) {
+export const ImageUploader = forwardRef(function ImageUploader(
+  {
+    value = [],
+    onChange,
+    maxImages = 5,
+    maxSizeMB = 5,
+    className = '',
+    capture,
+  }: ImageUploaderProps,
+  ref
+) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -278,99 +289,138 @@ export function ImageUploader({
     fileInputRef.current?.click();
   };
 
+  // Expose openFileDialog to parent components via ref
+  useImperativeHandle(ref, () => ({
+    openFileDialog,
+  }));
+
   return (
-    <div className="space-y-4">
+    <div className={cn('space-y-3', className)}>
       {/* Input oculto */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+        accept="image/*"
         multiple
         onChange={handleFileInput}
         className="hidden"
+        {...(capture ? { capture: typeof capture === 'string' ? capture : true } : {})}
       />
 
-      {/* Zona de drop */}
-      {value.length < maxImages && (
-        <div
+      {/* Preview de imágenes con overlay de opciones (estilo Facebook) */}
+      {value.length > 0 ? (
+        <div className="relative rounded-lg overflow-hidden border border-gray-300">
+          {/* Grid de imágenes */}
+          <div className={cn(
+            "grid gap-1",
+            value.length === 1 && "grid-cols-1",
+            value.length === 2 && "grid-cols-2",
+            value.length >= 3 && "grid-cols-2"
+          )}>
+            {value.map((image, index) => {
+              // Mostrar máximo 4 imágenes en el preview
+              if (index >= 4) return null;
+              
+              return (
+                <div
+                  key={index}
+                  className={cn(
+                    "relative group",
+                    value.length === 1 ? "aspect-[4/3]" : "aspect-square",
+                    value.length === 3 && index === 0 && "col-span-2"
+                  )}
+                >
+                  <Image
+                    src={image.preview || image.url}
+                    alt={`Imagen ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                  />
+
+                  {/* Overlay con botones (visible siempre en móvil) */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors">
+                    {/* Botón eliminar */}
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-lg"
+                    >
+                      <X className="h-4 w-4 text-gray-700" />
+                    </button>
+                  </div>
+
+                  {/* Mostrar "+N más" si hay más de 4 imágenes */}
+                  {index === 3 && value.length > 4 && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white">
+                        +{value.length - 4}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Botón "Agregar más fotos" (overlay) */}
+          {value.length < maxImages && !uploading && (
+            <button
+              type="button"
+              onClick={openFileDialog}
+              className="absolute bottom-3 right-3 px-3 py-1.5 bg-white hover:bg-gray-50 rounded-lg shadow-lg border border-gray-200 text-sm font-medium text-gray-700 flex items-center gap-1"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              Agregar fotos
+            </button>
+          )}
+
+          {/* Loading overlay */}
+          {uploading && (
+            <div className="absolute inset-0 bg-white/90 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+                <p className="text-sm text-gray-600">Subiendo...</p>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Botón compacto inicial (sin fotos) */
+        <button
+          type="button"
+          onClick={openFileDialog}
+          disabled={uploading}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          onClick={openFileDialog}
           className={cn(
-            'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
+            'w-full border-2 rounded-lg p-4 text-left transition-colors',
             dragActive
-              ? 'border-primary bg-primary/5'
-              : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50',
-            uploading && 'opacity-50 pointer-events-none'
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50',
+            uploading && 'opacity-50 cursor-not-allowed'
           )}
         >
           {uploading ? (
-            <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-8 w-8 text-primary animate-spin" />
-              <p className="text-sm text-muted-foreground">Subiendo imágenes...</p>
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+              <span className="text-sm text-gray-600">Subiendo imágenes...</span>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="h-8 w-8 text-gray-400" />
-              <p className="text-sm font-medium text-gray-700">
-                Arrastra imágenes aquí o haz clic para seleccionar
-              </p>
-              <p className="text-xs text-gray-500">
-                JPG, PNG, WebP, GIF • Hasta {maxImages} imágenes
-              </p>
-              <p className="text-xs text-gray-400">
-                Las imágenes se comprimen automáticamente para carga más rápida
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <Upload className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">Agregar fotos</p>
+                <p className="text-xs text-gray-500">o arrastra archivos aquí</p>
+              </div>
             </div>
           )}
-        </div>
+        </button>
       )}
-
-      {/* Preview de imágenes */}
-      {value.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {value.map((image, index) => (
-            <div
-              key={index}
-              className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group"
-            >
-              <Image
-                src={image.preview || image.url}
-                alt={`Imagen ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-              />
-
-              {/* Botón eliminar */}
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
-              {/* Indicador de primera imagen */}
-              {index === 0 && (
-                <div className="absolute bottom-2 left-2">
-                  <span className="text-xs bg-black/70 text-white px-2 py-1 rounded">
-                    Principal
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Info */}
-      <p className="text-xs text-muted-foreground">
-        {value.length} / {maxImages} imágenes
-        {value.length > 0 && ' • La primera imagen será la principal'}
-      </p>
     </div>
   );
-}
+});
