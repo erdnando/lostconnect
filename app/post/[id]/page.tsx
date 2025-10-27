@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getPostById } from '@/lib/services/postService';
 
 /**
  * Metadata dinámica
@@ -33,21 +34,12 @@ export async function generateMetadata({
 }
 
 /**
- * Obtener post desde el API
+ * Obtener post desde el servicio directamente
  */
 async function getPost(id: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/posts/${id}`, {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.success ? data.post : null;
+    const result = await getPostById(id);
+    return result.success ? result.post : null;
   } catch (error) {
     console.error('Error fetching post:', error);
     return null;
@@ -210,7 +202,7 @@ export default async function PostDetailPage({
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <span>
                     {post.location.city}
-                    {post.location.state && `, ${post.location.state}`}
+                    {(post.location as any).state && `, ${(post.location as any).state}`}
                     {post.location.country && ` • ${post.location.country}`}
                   </span>
                 </div>
@@ -230,18 +222,18 @@ export default async function PostDetailPage({
               <div className="pt-4 border-t">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{post.views || 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">{(post as any).views || 0}</p>
                     <p className="text-xs text-gray-600">Vistas</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">
-                      {post.reactions?.likes || 0}
+                      {(post as any).reactions?.likes || 0}
                     </p>
                     <p className="text-xs text-gray-600">Me gusta</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">
-                      {post.reactions?.comments || 0}
+                      {(post as any).reactions?.comments || 0}
                     </p>
                     <p className="text-xs text-gray-600">Comentarios</p>
                   </div>
@@ -255,12 +247,12 @@ export default async function PostDetailPage({
               <div className="flex items-center gap-3">
                 {/* Avatar placeholder */}
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                  {post.userId?.name?.[0]?.toUpperCase() || 'U'}
+                  {(post.userId as any)?.name?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{post.userId?.name || 'Usuario'}</p>
+                  <p className="font-medium text-gray-900">{(post.userId as any)?.name || 'Usuario'}</p>
                   <p className="text-sm text-gray-600">
-                    {post.userId?.email}
+                    {(post.userId as any)?.email}
                   </p>
                 </div>
               </div>
