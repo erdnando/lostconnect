@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { Post } from '@/lib/models/Post';
+import '@/lib/models/User'; // Importar para registrar el modelo
 import connectDB from '@/lib/db/mongodb';
 import { uploadMultipleImages, deleteMultipleImages } from './cloudinary';
 
@@ -218,20 +219,25 @@ export async function getPostById(postId: string) {
   await connectDB();
 
   try {
+    console.log('📝 getPostById - Buscando post:', postId);
+    
     const post = await Post.findById(postId)
       .populate('userId', 'name email image')
       .lean();
 
     if (!post) {
+      console.error('❌ Post no encontrado en BD:', postId);
       throw new Error('Post no encontrado');
     }
 
+    console.log('✅ Post encontrado en BD:', post._id);
+    
     return {
       success: true,
       post,
     };
   } catch (error) {
-    console.error('Error getting post by ID:', error);
+    console.error('❌ Error getting post by ID:', error);
     throw error;
   }
 }

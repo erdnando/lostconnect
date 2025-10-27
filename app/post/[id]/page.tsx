@@ -38,10 +38,12 @@ export async function generateMetadata({
  */
 async function getPost(id: string) {
   try {
+    console.log('🔍 Buscando post con ID:', id);
     const result = await getPostById(id);
+    console.log('✅ Post encontrado:', result.success);
     return result.success ? result.post : null;
   } catch (error) {
-    console.error('Error fetching post:', error);
+    console.error('❌ Error fetching post:', error);
     return null;
   }
 }
