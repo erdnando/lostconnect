@@ -107,7 +107,7 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Link href={`/post/${_id}`}>
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+      <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer border border-gray-200">
         {/* Imagen Principal */}
         {mainImage && (
           <div className="relative aspect-video w-full bg-muted">
@@ -122,14 +122,21 @@ export function PostCard({ post }: PostCardProps) {
             <div className="absolute top-3 left-3">
               <Badge
                 variant={type === 'lost' ? 'destructive' : 'default'}
-                className="text-xs font-semibold"
+                className={`text-xs font-semibold shadow-lg backdrop-blur-sm border-2 ${
+                  type === 'lost' 
+                    ? 'bg-red-600/90 text-white border-red-800' 
+                    : 'bg-green-600/90 text-white border-green-800'
+                }`}
               >
                 {type === 'lost' ? '🔍 Perdido' : '✅ Encontrado'}
               </Badge>
             </div>
             {/* Badge de categoría */}
             <div className="absolute top-3 right-3">
-              <Badge variant="secondary" className="text-xs bg-gray-200 text-gray-900">
+              <Badge 
+                variant="secondary" 
+                className="text-xs bg-gray-900/90 text-white backdrop-blur-sm shadow-lg border-2 border-gray-700"
+              >
                 {CATEGORY_LABELS[category] || category}
               </Badge>
             </div>

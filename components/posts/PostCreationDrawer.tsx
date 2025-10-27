@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -48,20 +48,26 @@ interface PostCreationDrawerProps {
 }
 
 /**
- * Categorías disponibles
+ * Interface para Category desde el API
  */
-const CATEGORIES = [
-  { value: 'electronics', label: 'Electrónicos', icon: '📱' },
-  { value: 'clothing', label: 'Ropa', icon: '👕' },
-  { value: 'accessories', label: 'Accesorios', icon: '👜' },
-  { value: 'documents', label: 'Documentos', icon: '📄' },
-  { value: 'pets', label: 'Mascotas', icon: '🐾' },
-  { value: 'vehicles', label: 'Vehículos', icon: '🚗' },
-  { value: 'jewelry', label: 'Joyería', icon: '💎' },
-  { value: 'keys', label: 'Llaves', icon: '🔑' },
-  { value: 'bags', label: 'Bolsos/Mochilas', icon: '🎒' },
-  { value: 'other', label: 'Otro', icon: '📦' },
-];
+interface Category {
+  _id: string;
+  value: string;
+  label: string;
+  icon: string;
+  order: number;
+}
+
+/**
+ * PostCreationDrawer
+ */
+interface Category {
+  _id: string;
+  value: string;
+  label: string;
+  icon: string;
+  order: number;
+}
 
 /**
  * PostCreationDrawer
@@ -79,6 +85,8 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
   const [showTypePicker, setShowTypePicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [showImageUploader, setShowImageUploader] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoryError, setCategoryError] = useState(false);
   const imageUploaderRef = useRef<any>(null);
   const [currentTag, setCurrentTag] = useState('');
@@ -107,9 +115,124 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
   // Validar si el formulario está completo para habilitar el botón "Publicar"
   const isFormValid = 
     description.trim().length >= 20 &&
+    description.trim().length <= 255 &&
     title.trim().length >= 5 &&
+    title.trim().length <= 50 &&
     images.length > 0 &&
     selectedCategory && selectedCategory.trim().length > 0;
+
+  /**
+   * Efecto: Activar shake en categoría automáticamente cada 2.5s
+   * cuando todos los campos están llenos EXCEPTO categoría
+   */
+  useEffect(() => {
+    const shouldShake = 
+      description.trim().length >= 20 &&
+      description.trim().length <= 255 &&
+      title.trim().length >= 5 &&
+      title.trim().length <= 50 &&
+      images.length > 0 &&
+      (!selectedCategory || selectedCategory.trim().length === 0);
+
+    if (shouldShake) {
+      // Activar shake cada 2.5 segundos
+      const interval = setInterval(() => {
+        setCategoryError(true);
+        setTimeout(() => setCategoryError(false), 820);
+      }, 2500);
+
+      return () => clearInterval(interval);
+    }
+  }, [description, title, images.length, selectedCategory]);
+
+  /**
+   * Efecto: Cargar categorías desde el API cuando se abre el drawer
+   */
+  useEffect(() => {
+    if (open && categories.length === 0) {
+      fetchCategories();
+    }
+  }, [open]);
+
+  /**
+   * Efecto: Limpiar formulario cuando se cierra el drawer
+   */
+  useEffect(() => {
+    if (!open) {
+      // Resetear formulario a valores iniciales
+      reset({
+        type: 'lost',
+        title: '',
+        description: '',
+        category: '',
+        tags: [],
+        location: {
+          city: '',
+          state: '',
+          country: '',
+        },
+      });
+      
+      // Limpiar imágenes
+      setImages([]);
+      
+      // Limpiar estados UI
+      setShowCategoryPicker(false);
+      setShowTypePicker(false);
+      setShowLocationPicker(false);
+      setShowImageUploader(false);
+      setCategoryError(false);
+      setCurrentTag('');
+      setIsUploading(false);
+    }
+  }, [open, reset]);
+
+  /**
+   * Fetch categorías desde el API
+   */
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await fetch('/api/categories');
+      const data = await response.json();
+
+      if (data.success) {
+        setCategories(data.data);
+      } else {
+        console.error('Error al cargar categorías:', data.error);
+        // Fallback a categorías hardcodeadas si falla el API
+        setCategories([
+          { _id: '1', value: 'electronics', label: 'Electrónicos', icon: '📱', order: 1 },
+          { _id: '2', value: 'clothing', label: 'Ropa', icon: '👕', order: 2 },
+          { _id: '3', value: 'accessories', label: 'Accesorios', icon: '👜', order: 3 },
+          { _id: '4', value: 'documents', label: 'Documentos', icon: '📄', order: 4 },
+          { _id: '5', value: 'pets', label: 'Mascotas', icon: '🐾', order: 5 },
+          { _id: '6', value: 'vehicles', label: 'Vehículos', icon: '🚗', order: 6 },
+          { _id: '7', value: 'jewelry', label: 'Joyería', icon: '💎', order: 7 },
+          { _id: '8', value: 'keys', label: 'Llaves', icon: '🔑', order: 8 },
+          { _id: '9', value: 'bags', label: 'Bolsos/Mochilas', icon: '🎒', order: 9 },
+          { _id: '10', value: 'other', label: 'Otro', icon: '📦', order: 10 },
+        ]);
+      }
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+      // Fallback a categorías hardcodeadas
+      setCategories([
+        { _id: '1', value: 'electronics', label: 'Electrónicos', icon: '📱', order: 1 },
+        { _id: '2', value: 'clothing', label: 'Ropa', icon: '👕', order: 2 },
+        { _id: '3', value: 'accessories', label: 'Accesorios', icon: '👜', order: 3 },
+        { _id: '4', value: 'documents', label: 'Documentos', icon: '📄', order: 4 },
+        { _id: '5', value: 'pets', label: 'Mascotas', icon: '🐾', order: 5 },
+        { _id: '6', value: 'vehicles', label: 'Vehículos', icon: '🚗', order: 6 },
+        { _id: '7', value: 'jewelry', label: 'Joyería', icon: '💎', order: 7 },
+        { _id: '8', value: 'keys', label: 'Llaves', icon: '🔑', order: 8 },
+        { _id: '9', value: 'bags', label: 'Bolsos/Mochilas', icon: '🎒', order: 9 },
+        { _id: '10', value: 'other', label: 'Otro', icon: '📦', order: 10 },
+      ]);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
 
   /**
    * Manejar intento de publicar (puede fallar validaciones)
@@ -214,16 +337,16 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
         side="bottom" 
         className="h-[92vh] overflow-y-auto bg-white border-t rounded-t-2xl"
       >
-        <SheetHeader className="border-b pb-4 mb-4">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-xl font-semibold text-gray-900">
+        <SheetHeader className="border-b pb-4 mb-4 !flex-row !items-center !space-y-0">
+          <div className="flex items-center justify-between w-full pr-12">
+            <SheetTitle className="text-xl font-semibold text-gray-900 !m-0">
               Crear Publicación
             </SheetTitle>
-            {/* Botón Post a la derecha */}
+            {/* Botón Publicar con más espacio del botón cerrar */}
             <Button
-              onClick={handlePublishClick}
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSubmit(onSubmit)}
+              disabled={isSubmitting || !isFormValid}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6"
             >
               {isSubmitting ? (
                 <>
@@ -421,7 +544,7 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                 >
                   <span>
                     {selectedCategory
-                      ? CATEGORIES.find((c) => c.value === selectedCategory)?.label
+                      ? categories.find((c) => c.value === selectedCategory)?.label
                       : 'Categoría...'}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -430,7 +553,16 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                 {/* Dropdown de categorías */}
                 {showCategoryPicker && (
                   <div className="absolute bottom-full mb-2 left-0 w-48 max-h-64 overflow-y-auto bg-black text-white rounded-lg shadow-xl">
-                    {CATEGORIES.map((cat, idx) => (
+                    {loadingCategories ? (
+                      <div className="px-3 py-4 text-center text-sm text-gray-400">
+                        Cargando...
+                      </div>
+                    ) : categories.length === 0 ? (
+                      <div className="px-3 py-4 text-center text-sm text-gray-400">
+                        No hay categorías disponibles
+                      </div>
+                    ) : (
+                      categories.map((cat, idx) => (
                       <button
                         key={cat.value}
                         type="button"
@@ -448,7 +580,8 @@ export function PostCreationDrawer({ open, onOpenChange }: PostCreationDrawerPro
                       >
                         {cat.label}
                       </button>
-                    ))}
+                      ))
+                    )}
                   </div>
                 )}
               </div>

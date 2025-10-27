@@ -21,9 +21,12 @@ export const createPostSchema = z.object({
     .min(20, 'La descripción debe tener al menos 20 caracteres')
     .max(2000, 'La descripción no puede exceder 2000 caracteres')
     .trim(),
-  category: z.enum(['electronics', 'documents', 'pets', 'clothing', 'accessories', 'other'], {
-    message: 'La categoría es requerida',
-  }),
+  category: z
+    .string({
+      message: 'La categoría es requerida',
+    })
+    .min(1, 'Debes seleccionar una categoría')
+    .trim(),
   images: z
     .array(
       z.object({
@@ -37,9 +40,10 @@ export const createPostSchema = z.object({
     .max(5, 'No puedes agregar más de 5 imágenes'),
   location: z
     .object({
-      coordinates: z.tuple([z.number(), z.number()]), // [longitude, latitude]
+      coordinates: z.tuple([z.number(), z.number()]).optional(), // [longitude, latitude] - ahora opcional
       address: z.string().optional(),
       city: z.string().optional(),
+      state: z.string().optional(), // Agregado state
       country: z.string().optional(),
     })
     .optional(),

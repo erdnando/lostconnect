@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ArrowLeft, MapPin, Calendar, Tag, Edit, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -104,8 +105,57 @@ export default async function PostDetailPage({
       {/* Contenido */}
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Columna principal - Imágenes y descripción */}
+          {/* Columna principal - Título, Descripción e Imágenes */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Título, badge y etiquetas */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-2 flex-wrap">
+                <Badge
+                  className={cn(
+                    "text-sm font-semibold px-3 py-1.5",
+                    isLost
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-green-500 text-white hover:bg-green-600'
+                  )}
+                >
+                  {isLost ? '🔍 Perdido' : '✅ Encontrado'}
+                </Badge>
+                
+                {/* Badge de categoría */}
+                {post.category && (
+                  <Badge 
+                    className="text-sm font-semibold px-3 py-1.5 bg-purple-500 text-white hover:bg-purple-600"
+                  >
+                    📦 {post.category}
+                  </Badge>
+                )}
+                
+                {/* Etiquetas junto al badge */}
+                {post.tags && post.tags.length > 0 && (
+                  <>
+                    {post.tags.map((tag: string) => (
+                      <Badge
+                        key={tag}
+                        className="text-sm font-semibold px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600"
+                      >
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </>
+                )}
+              </div>
+              </div>
+              <h1 className="text-3xl font-bold leading-tight text-gray-900">{post.title}</h1>
+            </div>
+
+            {/* Descripción */}
+            <div className="bg-white rounded-lg border p-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Descripción</h2>
+              <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">
+                {post.description}
+              </p>
+            </div>
+
             {/* Imágenes */}
             <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
               {post.images && post.images.length > 0 ? (
@@ -147,58 +197,13 @@ export default async function PostDetailPage({
               )}
             </div>
 
-            {/* Descripción */}
-            <div className="bg-white rounded-lg border p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900">Descripción</h2>
-              <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">
-                {post.description}
-              </p>
-            </div>
-
-            {/* Tags */}
-            {post.tags && post.tags.length > 0 && (
-              <div className="bg-white rounded-lg border p-6 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Tag className="h-4 w-4 text-gray-600" />
-                  <h2 className="text-lg font-semibold text-gray-900">Etiquetas</h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="bg-gray-200 text-gray-900">
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Tags - ELIMINADO, ahora están junto al badge de tipo */}
           </div>
 
           {/* Sidebar - Info del post */}
           <div className="space-y-6">
             {/* Info principal */}
             <div className="bg-white rounded-lg border p-6 shadow-sm space-y-4">
-              {/* Badge de tipo */}
-              <Badge
-                className={
-                  isLost
-                    ? 'bg-red-100 text-red-700 hover:bg-red-100'
-                    : 'bg-green-100 text-green-700 hover:bg-green-100'
-                }
-              >
-                {isLost ? '🔍 Perdido' : '✅ Encontrado'}
-              </Badge>
-
-              {/* Título */}
-              <h1 className="text-2xl font-bold leading-tight text-gray-900">{post.title}</h1>
-
-              {/* Categoría */}
-              <div className="flex items-start gap-2 text-sm">
-                <span className="font-medium text-gray-700">Categoría:</span>
-                <Badge variant="outline" className="border-gray-300 text-gray-900">
-                  {CATEGORY_LABELS[post.category] || post.category}
-                </Badge>
-              </div>
-
               {/* Ubicación */}
               {post.location?.city && (
                 <div className="flex items-start gap-2 text-sm text-gray-700">
@@ -296,7 +301,9 @@ export default async function PostDetailPage({
             </div>
           </div>
         </div>
+
+
       </div>
-    </div>
+    
   );
 }

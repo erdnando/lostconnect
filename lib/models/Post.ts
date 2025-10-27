@@ -60,7 +60,7 @@ const PostSchema = new Schema<IPost>(
     category: {
       type: String,
       required: true,
-      enum: ['electronics', 'documents', 'pets', 'clothing', 'accessories', 'other'],
+      // Sin enum - las categorías son dinámicas desde la DB
     },
     images: [
       {
