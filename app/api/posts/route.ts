@@ -42,12 +42,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 3. Obtener posts
+    // 3. Obtener sesión (opcional para reacciones)
+    const session = await auth();
+
+    // 4. Obtener posts
     const result = await getPosts({
       limit,
       cursor,
       type,
       status: status || 'active',
+      currentUserId: session?.user?.id,
     });
 
     return NextResponse.json(result);

@@ -109,46 +109,177 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 
 ## 💬 FASE 3: Interacciones
 
-### Sprint 3.1: Reacciones
-- [ ] API: POST /api/reactions (toggle)
-- [ ] API: GET /api/posts/[id]/reactions
-- [ ] Crear componente ReactionButton
-- [ ] Iconos animados
-- [ ] Optimistic updates
-- [ ] Integrar en PostCard
-- [ ] Integrar en PostDetail
-- [ ] Testear toggle de reacciones
+### Sprint 3.1: Sistema de Reacciones (Básico) ✅
+- [x] Crear modelo Reaction en Mongoose
+- [x] Agregar métodos estáticos: toggleReaction, getReactionCounts, getUserReaction
+- [x] Agregar índices: userId+postId (unique), postId+type
+- [x] API: POST /api/reactions (toggle con validación Zod)
+- [x] API: GET /api/reactions?postId=xxx (counts + user reaction)
+- [x] Crear componente ReactionButton con animaciones
+- [x] Crear componente ReactionBar (3 botones: like, helpful, found)
+- [x] Integrar ReactionBar en PostCard con optimistic updates
+- [x] Agregar userReaction en getPosts (postService)
+- [x] Actualizar API GET /api/posts para incluir currentUserId
+- [x] Iconos: Heart (like), ThumbsUp (helpful), CheckCircle (found)
+- [x] Colores institucionales La Salle aplicados
+- [x] Testear toggle de reacciones
 
-**Criterios:**
-- [ ] Puedo dar/quitar reacción
-- [ ] Solo una reacción por usuario
-- [ ] Contadores actualizan
-- [ ] UI muestra estado actual
+**Criterios Sprint 3.1:**
+- [x] Puedo dar/quitar reacción
+- [x] Solo una reacción por usuario
+- [x] Contadores actualizan instantáneamente
+- [x] UI muestra estado actual del usuario
+- [x] Animaciones suaves (scale 110% en click)
 
-### Sprint 3.2: Comentarios
+### Sprint 3.2: Sistema de Comentarios (Básico) 🚧 EN PROGRESO
+- [ ] Crear modelo Comment con:
+  - userId, postId, content, images[], location
+  - parentCommentId (para replies)
+  - repliesCount
 - [ ] API: POST /api/posts/[postId]/comments
 - [ ] API: GET /api/posts/[postId]/comments
-- [ ] API: GET /api/comments/[id]/replies
 - [ ] API: DELETE /api/comments/[id]
-- [ ] Crear CommentList
-- [ ] Crear CommentItem
-- [ ] Crear CommentForm
-- [ ] Crear CommentThread (replies)
-- [ ] Implementar sistema de replies anidados
-- [ ] Soporte para imágenes en comentarios
+- [ ] Crear CommentList component
+- [ ] Crear CommentItem component
+- [ ] Crear CommentForm component
+- [ ] Crear CommentThread (replies anidados)
+- [ ] Implementar sistema de replies con parentCommentId
+- [ ] Soporte para imágenes en comentarios (Cloudinary)
 - [ ] Soporte para ubicación en comentarios
 - [ ] Botón "Responder"
 - [ ] Contador de replies
-- [ ] Integrar en PostDetail
+- [ ] Actualizar commentsCount en Post
+- [ ] Integrar en página /post/[id]
 
-**Criterios:**
+**Criterios Sprint 3.2:**
 - [ ] Puedo comentar en posts
 - [ ] Puedo responder a comentarios
-- [ ] Replies se muestran anidados
-- [ ] Puedo agregar imágenes
-- [ ] Puedo agregar ubicación
+- [ ] Replies se muestran anidados (max 2-3 niveles)
+- [ ] Puedo agregar imágenes a comentarios
+- [ ] Puedo agregar ubicación a comentarios
 - [ ] Puedo eliminar mis comentarios
-- [ ] Historial se mantiene
+- [ ] Historial se mantiene en BD
+
+### Sprint 3.3: Reacciones Mejoradas (Facebook-style) ⏳ FUTURO
+**Objetivo:** Rediseñar sistema de reacciones con más expresividad emocional
+
+**Mejoras:**
+- [ ] Rediseñar esquema Reaction:
+  - Cambiar enum type a: like, love, sad, wow, angry
+  - Mantener índice único userId+postId
+  - Script de migración de datos antiguos (helpful → like, found → wow)
+- [ ] Implementar popup de reacciones:
+  - Container con 5 emojis animados
+  - Hover en desktop (mostrar al pasar mouse sobre botón)
+  - Long-press en mobile (vibración háptica)
+  - Animación de entrada: scale + fade
+  - Selección: emoji aumenta de tamaño
+- [ ] Nuevos iconos y colores:
+  - 👍 Like (azul #1877F2)
+  - ❤️ Love (rojo #F33E58)
+  - 😢 Sad (amarillo #F7B125) - "Espero lo encuentres"
+  - 😮 Wow (verde #53BDEB) - "¡Lo vi!"
+  - 😡 Angry (naranja #F05D34) - contexto robo
+- [ ] Actualizar ReactionButton:
+  - Emoji animado según tipo seleccionado
+  - Mostrar emoji en lugar de icono si usuario reaccionó
+  - Count diferenciado por tipo (tooltip con breakdown)
+- [ ] Actualizar ReactionBar:
+  - Contenedor de popup posicionado arriba del botón
+  - Animación suave de entrada/salida
+  - Cerrar al clickear fuera o seleccionar
+- [ ] Migración de datos:
+  - Script para convertir "helpful" → "like"
+  - Script para convertir "found" → "wow"
+  - Backup de BD antes de migrar
+- [ ] Actualizar UI de contadores:
+  - Mostrar emojis más populares junto al count
+  - Ej: "❤️😮 45" (Love y Wow son los más comunes)
+- [ ] Testing completo:
+  - Testear popup en desktop (hover)
+  - Testear long-press en mobile
+  - Testear animaciones en diferentes navegadores
+  - Verificar migración de datos
+
+**Criterios Sprint 3.3:**
+- [ ] Popup muestra 5 reacciones al hover/long-press
+- [ ] Puedo seleccionar cualquier reacción
+- [ ] Emojis animados son expresivos
+- [ ] Datos antiguos migrados correctamente
+- [ ] Performance no se degrada
+- [ ] Funciona perfecto en mobile y desktop
+
+### Sprint 3.4: Comentarios Especiales "Tengo Información" ⏳ FUTURO
+**Objetivo:** Crear tipo especial de comentario para reportes de avistamiento
+
+**Características:**
+- [ ] Extender modelo Comment:
+  - Agregar campo: isInfoComment (boolean)
+  - Agregar campo: verifiedByOwner (boolean, default false)
+  - Agregar campo: helpfulness (number, votos de otros usuarios)
+  - Mantener compatibilidad con comentarios normales
+- [ ] Crear botón separado en PostCard:
+  - Texto: "📍 Creo que lo vi" o "💡 Tengo información"
+  - Posición: Junto a botón de comentarios
+  - Badge si hay comentarios de info: "3 avistamientos"
+  - Color: Verde La Salle (#22C55E) o dorado
+- [ ] Crear modal/drawer especial InfoCommentForm:
+  - Campo: Descripción detallada (obligatorio, min 50 chars)
+  - Campo: Ubicación en mapa (obligatorio)
+  - Campo: Fecha/hora del avistamiento (opcional)
+  - Campo: Imagen (opcional pero recomendada)
+  - Validación estricta antes de enviar
+  - Preview del comentario antes de publicar
+- [ ] Diseño diferenciado en CommentItem:
+  - Borde grueso verde/dorado (4px)
+  - Fondo ligeramente coloreado (#22C55E10)
+  - Badge "💡 Información Importante" o "📍 Avistamiento"
+  - Icono especial grande (👁️ o 📍)
+  - Mostrar ubicación como mapa pequeño (clickeable)
+  - Botón para ampliar imagen
+  - Fecha/hora destacada si existe
+- [ ] Sistema de verificación:
+  - Owner del post puede marcar como "✓ Verificado"
+  - Owner puede marcar como "✗ No útil"
+  - Badge de estado junto al comentario
+  - Notificación al comentarista si fue verificado
+- [ ] Mostrar destacados:
+  - Estos comentarios aparecen PRIMERO (antes que normales)
+  - Orden: Verificados > No verificados > Por fecha
+  - Separador visual entre comentarios info y normales
+  - Contador separado: "3 avistamientos • 12 comentarios"
+- [ ] Notificaciones prioritarias:
+  - Push notification inmediata al dueño del post
+  - Email si está configurado
+  - Badge en navbar con número de info comments nuevos
+- [ ] Sistema de votos de utilidad:
+  - Otros usuarios pueden votar si fue útil (👍/👎)
+  - Score de helpfulness visible
+  - Orden también por helpfulness
+- [ ] API endpoints:
+  - POST /api/posts/[postId]/info-comments
+  - PATCH /api/comments/[id]/verify (solo owner del post)
+  - PATCH /api/comments/[id]/vote (cualquier usuario)
+- [ ] Analytics:
+  - Trackear tasa de resolución con info comments
+  - Mostrar en stats del usuario: "Has ayudado a encontrar X objetos"
+
+**Criterios Sprint 3.4:**
+- [ ] Botón separado visible en PostCard
+- [ ] Modal especial para crear info comment
+- [ ] Validación estricta (descripción + ubicación)
+- [ ] Diseño destacado en lista de comentarios
+- [ ] Owner puede verificar/descartar info
+- [ ] Notificación prioritaria funciona
+- [ ] Sistema de votos operativo
+- [ ] Comentarios info aparecen primero
+- [ ] Contador separado en UI
+- [ ] Analytics básicos funcionando
+
+**Prioridad de Implementación:**
+1. 🔥 Sprint 3.2 (Comentarios básicos) - AHORA
+2. ⭐ Sprint 3.3 (Reacciones Facebook) - Después
+3. 💡 Sprint 3.4 (Info Comments) - Después
 
 ---
 
@@ -343,62 +474,90 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 ```
 FASE 1: Setup y Fundación      [██████████] 100% ✅
 FASE 2: Posts                   [██████████] 100% ✅
-FASE 3: Interacciones           [░░░░░░░░░░]   0%
+FASE 3: Interacciones           [███░░░░░░░]  30% 🚧
+  └─ Sprint 3.1 (Reacciones)    [██████████] 100% ✅
+  └─ Sprint 3.2 (Comentarios)   [░░░░░░░░░░]   0% 🚧 EN PROGRESO
+  └─ Sprint 3.3 (React FB)      [░░░░░░░░░░]   0% ⏳
+  └─ Sprint 3.4 (Info Comms)    [░░░░░░░░░░]   0% ⏳
 FASE 4: Perfil y Polish         [░░░░░░░░░░]   0%
 Deployment                      [██████████] 100% ✅
 
-TOTAL MVP                       [█████░░░░░]  50%
+TOTAL MVP                       [██████░░░░]  60%
 ```
 
 ---
 
-## 🎯 PRÓXIMO PASO: Sprint 3.1 - Sistema de Reacciones
+## 🎯 PRÓXIMO PASO: Sprint 3.2 - Sistema de Comentarios Básico
 
 ### ¿Qué sigue ahora?
 
-Implementar el sistema completo de reacciones (likes, helpful, found) para que los usuarios puedan interactuar con los posts.
+Implementar el sistema completo de comentarios con replies anidados, soporte para imágenes y ubicación.
 
-#### Sprint 3.1: Sistema de Reacciones (2-3 días)
-**Objetivo:** Permitir a los usuarios reaccionar a posts con diferentes tipos de emociones.
+#### Sprint 3.2: Sistema de Comentarios (4-6 horas)
+**Objetivo:** Permitir a los usuarios comentar en posts y responder a otros comentarios.
 
 **Tareas prioritarias:**
-1. 🔲 Crear modelo Reaction en Mongoose
-   - userId, postId, type (like/helpful/found)
-   - Índice único compuesto (userId + postId)
+1. 🔲 Crear modelo Comment en Mongoose
+   - userId, postId, content, images[], location
+   - parentCommentId (para replies), repliesCount
+   - Índices: postId, parentCommentId
    
-2. 🔲 API: POST /api/posts/[postId]/reactions
-   - Toggle reacción (add/remove)
+2. 🔲 API: POST /api/posts/[postId]/comments
    - Validar usuario autenticado
-   - Actualizar contador en Post
+   - Validar content (min 1 char, max 2000)
+   - Subir imágenes a Cloudinary si existen
+   - Actualizar commentsCount en Post
+   - Actualizar repliesCount en parentComment si existe
    
-3. 🔲 API: GET /api/posts/[postId]/reactions
-   - Obtener todas las reacciones de un post
-   - Agrupar por tipo
+3. 🔲 API: GET /api/posts/[postId]/comments
+   - Obtener comentarios raíz (sin parentCommentId)
+   - Paginación cursor-based
+   - Populate userId
+   - Incluir repliesCount
    
-4. 🔲 Crear componente ReactionButton
-   - Iconos animados para cada tipo
-   - Estado activo/inactivo
-   - Optimistic updates
+4. 🔲 API: DELETE /api/comments/[id]
+   - Verificar ownership
+   - Actualizar contadores
    
-5. 🔲 Integrar en PostCard y PostDetail
-   - Mostrar contadores
-   - Highlight si el usuario reaccionó
-   - Animaciones suaves
+5. 🔲 Crear CommentList component
+   - Mostrar lista de comentarios
+   - Loading states
+   - Empty state
+   
+6. 🔲 Crear CommentItem component
+   - Mostrar contenido, autor, fecha
+   - Mostrar imágenes si existen
+   - Mostrar ubicación si existe
+   - Botón "Responder"
+   - Botón "Eliminar" (si es owner)
+   - Botón "Ver X respuestas" (si tiene replies)
+   
+7. 🔲 Crear CommentForm component
+   - Textarea para contenido
+   - ImageUploader opcional
+   - LocationPicker opcional
+   - Character counter
+   - Submit button
+   
+8. 🔲 Implementar CommentThread (replies)
+   - Cargar replies al expandir
+   - Mostrar anidados (max 2-3 niveles)
+   - Formulario de reply inline
 
-**Duración estimada:** 2-3 días (6-8 horas)
+**Duración estimada:** 4-6 horas
 
 **Criterios de éxito:**
-- ✅ Puedo dar/quitar reacciones
-- ✅ Solo una reacción por usuario por post
-- ✅ Contadores actualizan en tiempo real
-- ✅ UI muestra mi reacción actual
-- ✅ Animaciones fluidas
-- ✅ Funciona en mobile y desktop
+- ✅ Puedo comentar en posts
+- ✅ Puedo responder a comentarios
+- ✅ Replies se muestran anidados
+- ✅ Puedo agregar imágenes
+- ✅ Puedo agregar ubicación
+- ✅ Puedo eliminar mis comentarios
+- ✅ Contadores actualizan correctamente
 
-**Pendiente para Sprint 3.2:**
-- Sistema de comentarios con replies
-- Imágenes en comentarios
-- Ubicación en comentarios
+**Pendiente para Sprints futuros:**
+- Sprint 3.3: Reacciones estilo Facebook con más emociones
+- Sprint 3.4: Comentarios especiales "Tengo información"
 
 ---
 

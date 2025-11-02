@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { Post } from '@/lib/models/Post';
+import Reaction from '@/lib/models/Reaction';
 import '@/lib/models/User'; // Importar para registrar el modelo
 import connectDB from '@/lib/db/mongodb';
 import { uploadMultipleImages, deleteMultipleImages } from './cloudinary';
@@ -54,6 +55,7 @@ export interface GetPostsQuery {
   type?: 'lost' | 'found';
   status?: 'active' | 'resolved' | 'closed';
   userId?: string;
+  currentUserId?: string; // ID del usuario actual para obtener sus reacciones
 }
 
 /**
@@ -160,6 +162,7 @@ export async function getPosts(query: GetPostsQuery = {}) {
     type,
     status = 'active',
     userId,
+    currentUserId,
   } = query;
 
   try {
@@ -190,14 +193,47 @@ export async function getPosts(query: GetPostsQuery = {}) {
     const hasMore = posts.length > limit;
     const postsToReturn = hasMore ? posts.slice(0, limit) : posts;
 
-    // 5. Obtener el cursor del último post
+    // 5. Si hay usuario autenticado, obtener sus reacciones
+    let postsWithReactions = postsToReturn;
+    
+    if (currentUserId) {
+      const postIds = postsToReturn.map(post => post._id);
+      
+      // Obtener todas las reacciones del usuario para estos posts
+      const userReactions = await Reaction.find({
+        userId: new Types.ObjectId(currentUserId),
+        postId: { $in: postIds },
+      }).lean();
+
+      // Mapear reacciones por postId
+      const reactionsByPost = new Map(
+        userReactions.map(reaction => [
+          reaction.postId.toString(),
+          reaction.type
+        ])
+      );
+
+      // Agregar userReaction a cada post
+      postsWithReactions = postsToReturn.map(post => ({
+        ...post,
+        userReaction: reactionsByPost.get(post._id.toString()) || null,
+      }));
+    } else {
+      // Si no hay usuario, agregar userReaction como null
+      postsWithReactions = postsToReturn.map(post => ({
+        ...post,
+        userReaction: null,
+      }));
+    }
+
+    // 6. Obtener el cursor del último post
     const nextCursor = hasMore
       ? postsToReturn[postsToReturn.length - 1]._id.toString()
       : null;
 
     return {
       success: true,
-      posts: postsToReturn,
+      posts: postsWithReactions,
       pagination: {
         hasMore,
         nextCursor,

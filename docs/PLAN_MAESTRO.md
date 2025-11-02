@@ -811,25 +811,65 @@ Usuario       Next.js       API Route       MongoDB
 
 #### **FASE 3: Interacciones - Comentarios y Reacciones (Semana 5-6)**
 
-**Sprint 3.1: Sistema de Reacciones**
-- Crear modelo de Reaction
-- Implementar API de reacciones
-- Crear componente ReactionButton
-- Agregar contadores en PostCard
-- Actualizar contadores en tiempo real
+**Sprint 3.1: Sistema de Reacciones (Básico)** ✅
+- [x] Crear modelo de Reaction
+- [x] Implementar API POST /api/reactions (toggle)
+- [x] Implementar API GET /api/reactions (counts + user reaction)
+- [x] Crear componente ReactionButton con animaciones
+- [x] Crear componente ReactionBar (3 botones: like, helpful, found)
+- [x] Integrar ReactionBar en PostCard
+- [x] Actualizar contadores en tiempo real (optimistic updates)
+- [x] Agregar userReaction en API de posts
+- [x] Colores institucionales La Salle
+- [ ] **PENDIENTE (Sprint 3.3):** Mejorar a sistema tipo Facebook con más emociones
 
-**Sprint 3.2: Sistema de Comentarios**
-- Crear modelo de Comment
-- Implementar API de comentarios
-- Crear componente CommentItem
-- Crear formulario de comentario
-- Implementar sistema de replies (anidados)
-- Agregar upload de imagen en comentarios
-- Agregar ubicación en comentarios
+**Sprint 3.2: Sistema de Comentarios (Básico)** 🚧 EN PROGRESO
+- [ ] Crear modelo de Comment
+- [ ] Implementar API GET /api/posts/[postId]/comments
+- [ ] Implementar API POST /api/posts/[postId]/comments
+- [ ] Implementar API DELETE /api/comments/[id]
+- [ ] Crear componente CommentItem
+- [ ] Crear componente CommentForm
+- [ ] Implementar sistema de replies (anidados con parentCommentId)
+- [ ] Agregar upload de imagen en comentarios (Cloudinary)
+- [ ] Agregar ubicación en comentarios
+- [ ] Actualizar contador commentsCount en Post
+- [ ] **PENDIENTE (Sprint 3.4):** Agregar "Comentarios Especiales de Encontrado"
+
+**Sprint 3.3: Reacciones Mejoradas (Facebook-style)** ⏳ FUTURO
+- [ ] Rediseñar sistema de reacciones con más emociones:
+  - 👍 Like (Me gusta)
+  - ❤️ Love (Me encanta)
+  - 😢 Sad (Triste - "Espero lo encuentres")
+  - 😮 Wow (Sorprendido - "¡Lo vi!")
+  - 😡 Angry (Enojado - contexto robo/pérdida)
+- [ ] Implementar popup de reacciones (hover en desktop)
+- [ ] Implementar long-press en mobile
+- [ ] Migrar datos de reacciones antiguas
+- [ ] Actualizar contadores y UI
+- [ ] Quitar reacciones "helpful" y "found" (migrar a nuevo sistema)
+
+**Sprint 3.4: Comentarios Especiales "Tengo Información"** ⏳ FUTURO
+- [ ] Crear tipo de comentario especial: "info" o "sighting"
+- [ ] Agregar botón separado: "Creo que lo vi" / "Tengo información"
+- [ ] Diseño diferenciado:
+  - Borde verde/dorado
+  - Icono especial (📍 o 👁️)
+  - Badge "Información importante"
+- [ ] Hacer obligatorio:
+  - Comentario con detalles
+  - Ubicación (mapa)
+  - Opcionalmente imagen
+- [ ] Mostrar estos comentarios destacados primero
+- [ ] Notificación prioritaria al dueño del post
+- [ ] Agregar contador separado: "infoCommentsCount"
+- [ ] Permitir al dueño marcar como "verificado" o "útil"
 
 **Entregables Fase 3:**
-- Reacciones funcionando (like, helpful, found)
-- Comentarios con respuestas
+- ✅ Reacciones básicas funcionando (like, helpful, found)
+- 🚧 Comentarios con respuestas (en progreso)
+- ⏳ Sistema de reacciones mejorado estilo Facebook (futuro)
+- ⏳ Comentarios especiales para información de objetos encontrados (futuro)
 - Historial de interacciones guardado
 
 ---

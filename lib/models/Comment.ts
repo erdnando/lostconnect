@@ -26,22 +26,25 @@ const CommentSchema = new Schema<IComment>(
       type: Schema.Types.ObjectId,
       ref: 'Post',
       required: true,
+      index: true, // Índice para queries por post
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true, // Índice para queries por usuario
     },
     content: {
       type: String,
       required: [true, 'El contenido es requerido'],
-      maxlength: [1000, 'El comentario no puede exceder 1000 caracteres'],
+      maxlength: [2000, 'El comentario no puede exceder 2000 caracteres'],
       trim: true,
     },
     parentCommentId: {
       type: Schema.Types.ObjectId,
       ref: 'Comment',
       default: null,
+      index: true, // Índice para queries de replies
     },
     replyToUserId: {
       type: Schema.Types.ObjectId,
@@ -66,12 +69,17 @@ const CommentSchema = new Schema<IComment>(
     repliesCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
   },
   {
     timestamps: true,
   }
 );
+
+// Índices compuestos para mejorar performance
+CommentSchema.index({ postId: 1, parentCommentId: 1, createdAt: -1 });
+CommentSchema.index({ postId: 1, createdAt: -1 });
 
 // Evitar recrear el modelo en hot reload
 const Comment = (mongoose.models?.Comment as mongoose.Model<IComment>) || mongoose.model<IComment>('Comment', CommentSchema);

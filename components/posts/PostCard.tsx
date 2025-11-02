@@ -2,11 +2,15 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, MessageCircle, Heart } from 'lucide-react';
+import { MapPin, Calendar, MessageCircle } from 'lucide-react';
+import { ReactionBar } from './ReactionButton';
+import { ReactionType } from '@/lib/models/Reaction';
+import { PostDetailDrawer } from './PostDetailDrawer';
 
 /**
  * Tipos de Post
@@ -37,6 +41,7 @@ export interface PostCardProps {
       helpful: number;
       found: number;
     };
+    userReaction?: ReactionType | null;
     userId: {
       _id: string;
       name: string;
@@ -89,9 +94,19 @@ export function PostCard({ post }: PostCardProps) {
     status,
     commentsCount,
     reactionsCount,
+    userReaction,
     userId,
     createdAt,
   } = post;
+
+  // Estado local para conteos de reacciones (actualización optimista)
+  const [localReactionCounts, setLocalReactionCounts] = useState(reactionsCount);
+  
+  // Estado local para contador de comentarios
+  const [localCommentsCount, setLocalCommentsCount] = useState(commentsCount);
+  
+  // Estado para el drawer de comentarios
+  const [showDrawer, setShowDrawer] = useState(false);
 
   // Imagen principal (primera del array)
   const mainImage = images[0];
@@ -103,11 +118,12 @@ export function PostCard({ post }: PostCardProps) {
   });
 
   // Total de reacciones
-  const totalReactions = Object.values(reactionsCount).reduce((a, b) => a + b, 0);
+  const totalReactions = Object.values(localReactionCounts).reduce((a, b) => a + b, 0);
 
   return (
-    <Link href={`/post/${_id}`}>
-      <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow cursor-pointer border border-gray-200">
+    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-gray-200">
+      {/* Enlace en la imagen y contenido */}
+      <Link href={`/post/${_id}`}>
         {/* Imagen Principal */}
         {mainImage && (
           <div className="relative aspect-video w-full bg-muted">
@@ -118,19 +134,42 @@ export function PostCard({ post }: PostCardProps) {
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            {/* Badge de tipo en la esquina */}
-            <div className="absolute top-3 left-3">
-              <Badge
-                variant={type === 'lost' ? 'destructive' : 'default'}
-                className={`text-xs font-semibold shadow-lg backdrop-blur-sm border-2 ${
-                  type === 'lost' 
-                    ? 'bg-red-600/90 text-white border-red-800' 
-                    : 'bg-green-600/90 text-white border-green-800'
-                }`}
-              >
-                {type === 'lost' ? '🔍 Perdido' : '✅ Encontrado'}
-              </Badge>
-            </div>
+            
+            {/* Ribbon de "ENCONTRADO" cuando type es found */}
+            {type === 'found' && (
+              <div className="absolute top-0 right-0 w-32 h-32 overflow-hidden pointer-events-none z-20">
+                <div 
+                  className="absolute transform rotate-45 text-white text-center font-black uppercase tracking-wider shadow-2xl"
+                  style={{
+                    top: '22px',
+                    right: '-35px',
+                    width: '150px',
+                    padding: '8px 0',
+                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                    fontSize: '11px',
+                    letterSpacing: '1.5px',
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2)',
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderBottom: '3px solid rgba(0,0,0,0.2)'
+                  }}
+                >
+                  ✓ ENCONTRADO
+                </div>
+              </div>
+            )}
+            
+            {/* Badge de tipo en la esquina - Solo PERDIDO (found tiene ribbon) */}
+            {type === 'lost' && (
+              <div className="absolute top-3 left-3">
+                <Badge
+                  variant="destructive"
+                  className="text-xs font-semibold shadow-lg backdrop-blur-sm border-2 bg-red-600/90 text-white border-red-800"
+                >
+                  🔍 Perdido
+                </Badge>
+              </div>
+            )}
+            
             {/* Badge de categoría */}
             <div className="absolute top-3 right-3">
               <Badge 
@@ -210,35 +249,56 @@ export function PostCard({ post }: PostCardProps) {
             </div>
           </div>
         </CardContent>
+      </Link>
 
-        <CardFooter className="pt-0 border-t">
-          {/* Estadísticas */}
-          <div className="flex items-center gap-4 text-sm text-gray-600 w-full">
-            {/* Comentarios */}
-            <div className="flex items-center gap-1.5">
-              <MessageCircle className="h-4 w-4" />
-              <span>{commentsCount}</span>
+      {/* Footer con reacciones interactivas */}
+      <CardFooter className="pt-3 pb-4 border-t flex-col items-start gap-3">
+        {/* Barra de Reacciones */}
+        <div className="w-full" onClick={(e) => e.stopPropagation()}>
+          <ReactionBar
+            postId={_id}
+            initialCounts={reactionsCount}
+            initialUserReaction={userReaction || null}
+            onReactionChange={setLocalReactionCounts}
+          />
+        </div>
+
+        {/* Estadísticas secundarias */}
+        <div className="flex items-center gap-4 text-sm text-gray-600 w-full">
+          {/* Comentarios - Abre drawer */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDrawer(true);
+            }}
+            className="flex items-center gap-1.5 hover:text-[#001D68] transition-colors"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>{localCommentsCount} comentario{localCommentsCount !== 1 ? 's' : ''}</span>
+          </button>
+
+          {/* Estado */}
+          {status !== 'active' && (
+            <div className="ml-auto">
+              <Badge variant={status === 'resolved' ? 'default' : 'secondary'} className="text-xs">
+                {status === 'resolved' ? 'Resuelto' : 'Cerrado'}
+              </Badge>
             </div>
+          )}
+        </div>
+      </CardFooter>
 
-            {/* Reacciones */}
-            {totalReactions > 0 && (
-              <div className="flex items-center gap-1.5">
-                <Heart className="h-4 w-4" />
-                <span>{totalReactions}</span>
-              </div>
-            )}
-
-            {/* Estado */}
-            {status !== 'active' && (
-              <div className="ml-auto">
-                <Badge variant={status === 'resolved' ? 'default' : 'secondary'} className="text-xs">
-                  {status === 'resolved' ? 'Resuelto' : 'Cerrado'}
-                </Badge>
-              </div>
-            )}
-          </div>
-        </CardFooter>
-      </Card>
-    </Link>
+      {/* Drawer para ver detalles y comentarios */}
+      <PostDetailDrawer
+        post={{
+          ...post,
+          commentsCount: localCommentsCount,
+          reactionsCount: localReactionCounts,
+        }}
+        open={showDrawer}
+        onOpenChange={setShowDrawer}
+        onCommentsCountChange={setLocalCommentsCount}
+      />
+    </Card>
   );
 }

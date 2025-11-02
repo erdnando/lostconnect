@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, MapPin, Calendar, Tag, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${post.title} | Network Social`,
+    title: `${post.title} | LostConnect`,
     description: post.description.slice(0, 160),
   };
 }
@@ -48,22 +48,6 @@ async function getPost(id: string) {
     return null;
   }
 }
-
-/**
- * Traducción de categorías
- */
-const CATEGORY_LABELS: Record<string, string> = {
-  electronics: 'Electrónicos',
-  clothing: 'Ropa',
-  accessories: 'Accesorios',
-  documents: 'Documentos',
-  pets: 'Mascotas',
-  vehicles: 'Vehículos',
-  jewelry: 'Joyería',
-  keys: 'Llaves',
-  bags: 'Bolsos/Mochilas',
-  other: 'Otro',
-};
 
 /**
  * Página de detalle de un post
@@ -100,9 +84,9 @@ export default async function PostDetailPage({
       {/* Contenido */}
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Columna principal - Título, Descripción e Imágenes */}
+          {/* Columna principal */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Título, badge y etiquetas */}
+            {/* Título y badges */}
             <div className="space-y-3">
               <div className="flex items-start gap-2 flex-wrap">
                 <Badge
@@ -116,16 +100,12 @@ export default async function PostDetailPage({
                   {isLost ? '🔍 Perdido' : '✅ Encontrado'}
                 </Badge>
                 
-                {/* Badge de categoría */}
                 {post.category && (
-                  <Badge 
-                    className="text-sm font-semibold px-3 py-1.5 bg-purple-500 text-white hover:bg-purple-600"
-                  >
+                  <Badge className="text-sm font-semibold px-3 py-1.5 bg-purple-500 text-white hover:bg-purple-600">
                     📦 {post.category}
                   </Badge>
                 )}
                 
-                {/* Etiquetas junto al badge */}
                 {post.tags && post.tags.length > 0 && (
                   <>
                     {post.tags.map((tag: string) => (
@@ -155,7 +135,6 @@ export default async function PostDetailPage({
             <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
               {post.images && post.images.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 p-4">
-                  {/* Imagen principal */}
                   <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
                     <Image
                       src={post.images[0].url}
@@ -166,7 +145,6 @@ export default async function PostDetailPage({
                     />
                   </div>
 
-                  {/* Miniaturas */}
                   {post.images.length > 1 && (
                     <div className="grid grid-cols-4 gap-2">
                       {post.images.slice(1).map((image: any, index: number) => (
@@ -191,15 +169,12 @@ export default async function PostDetailPage({
                 </div>
               )}
             </div>
-
-            {/* Tags - ELIMINADO, ahora están junto al badge de tipo */}
           </div>
 
-          {/* Sidebar - Info del post */}
+          {/* Sidebar */}
           <div className="space-y-6">
             {/* Info principal */}
             <div className="bg-white rounded-lg border p-6 shadow-sm space-y-4">
-              {/* Ubicación */}
               {post.location?.city && (
                 <div className="flex items-start gap-2 text-sm text-gray-700">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -211,7 +186,6 @@ export default async function PostDetailPage({
                 </div>
               )}
 
-              {/* Fecha */}
               <div className="flex items-start gap-2 text-sm text-gray-700">
                 <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>
@@ -221,7 +195,6 @@ export default async function PostDetailPage({
                 </span>
               </div>
 
-              {/* Estadísticas */}
               <div className="pt-4 border-t">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
@@ -236,7 +209,7 @@ export default async function PostDetailPage({
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">
-                      {(post as any).reactions?.comments || 0}
+                      {post.commentsCount || 0}
                     </p>
                     <p className="text-xs text-gray-600">Comentarios</p>
                   </div>
@@ -248,7 +221,6 @@ export default async function PostDetailPage({
             <div className="bg-white rounded-lg border p-6 shadow-sm">
               <h3 className="font-semibold mb-3 text-gray-900">Publicado por</h3>
               <div className="flex items-center gap-3">
-                {/* Avatar placeholder */}
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                   {(post.userId as any)?.name?.[0]?.toUpperCase() || 'U'}
                 </div>
@@ -260,24 +232,12 @@ export default async function PostDetailPage({
                 </div>
               </div>
 
-              {/* Botones de acción */}
               <div className="mt-4 pt-4 border-t space-y-2">
                 <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">Contactar</Button>
-                {/* TODO: Mostrar solo si es el owner */}
-                {/* <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1 gap-2">
-                    <Edit className="h-4 w-4" />
-                    Editar
-                  </Button>
-                  <Button variant="outline" className="flex-1 gap-2 text-red-600 hover:text-red-700">
-                    <Trash2 className="h-4 w-4" />
-                    Eliminar
-                  </Button>
-                </div> */}
               </div>
             </div>
 
-            {/* Status del post */}
+            {/* Status */}
             <div className="bg-white rounded-lg border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-900">Estado</span>

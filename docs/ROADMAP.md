@@ -481,6 +481,173 @@ Al finalizar las 8 semanas, el MVP debe cumplir:
 
 ---
 
+## 🎮 FASE 5: Gamificación y Engagement (Semana 9-10)
+
+### Sprint 4.4: Sistema de Gamificación "Buscadores Expertos"
+
+**Objetivos:**
+- Implementar sistema de puntos inspirado en Stack Overflow
+- Crear sistema de badges y logros
+- Rankings de mejores buscadores
+- Minijuegos como recompensa
+
+**Contexto:**
+Similar a Stack Overflow donde el autor de una pregunta marca la respuesta correcta, aquí el dueño del objeto perdido marca quién le ayudó a encontrarlo. Esto crea un sistema de gamificación que incentiva la participación activa de la comunidad.
+
+**Tareas Fase 1 - Sistema Básico (3-4 días):**
+- [ ] Extender modelo User con campos de gamificación
+  - [ ] `points: number`
+  - [ ] `level: number`
+  - [ ] `finderStats: object`
+  - [ ] `rankingCategory: string`
+- [ ] Crear modelo `FinderAction`
+  - [ ] Registrar acciones de ayuda
+  - [ ] Validar 1 finder por post
+- [ ] Implementar API `POST /api/posts/[postId]/mark-finder`
+  - [ ] Validar que solo owner puede marcar
+  - [ ] Otorgar 50 puntos al finder
+  - [ ] Crear registro en FinderAction
+  - [ ] Actualizar estadísticas
+- [ ] Sistema de cálculo de puntos
+  - [ ] Crear post: +5
+  - [ ] Comentario normal: +2
+  - [ ] Comentario info: +10
+  - [ ] Marcado como finder: +50
+  - [ ] Post verificado como encontrado: +100
+  - [ ] Racha bonus: +25
+- [ ] Sistema de niveles
+  - [ ] Bronze: 0-99 pts
+  - [ ] Silver: 100-499 pts
+  - [ ] Gold: 500-999 pts (desbloquea juegos)
+  - [ ] Platinum: 1000-2499 pts
+  - [ ] Diamond: 2500+ pts
+- [ ] UI básica en perfil
+  - [ ] Mostrar nivel actual
+  - [ ] Barra de progreso a siguiente nivel
+  - [ ] Estadísticas de finder
+  - [ ] Objetos ayudados a encontrar
+
+**Tareas Fase 2 - Badges y Rankings (2-3 días):**
+- [ ] Sistema de badges
+  - [ ] Crear modelo Badge
+  - [ ] Definir 25 badges diferentes
+  - [ ] Lógica de desbloqueo automático
+  - [ ] API `GET /api/badges/all`
+  - [ ] API `GET /api/user/[userId]/badges`
+- [ ] UI de badges en perfil
+  - [ ] Grid de badges
+  - [ ] Desbloqueados en color, bloqueados en gris
+  - [ ] Tooltip con descripción
+  - [ ] Animación de desbloqueo (confetti)
+- [ ] Sistema de rankings
+  - [ ] API `GET /api/rankings/global`
+  - [ ] API `GET /api/rankings/monthly`
+  - [ ] API `GET /api/rankings/weekly`
+  - [ ] API `GET /api/rankings/by-category`
+  - [ ] Cron job para actualizar rankings
+- [ ] UI de leaderboards
+  - [ ] Página principal de rankings
+  - [ ] Tabs: Global, Mensual, Semanal
+  - [ ] Top 3 destacado con podio
+  - [ ] Lista completa con avatares
+  - [ ] Indicador de posición del usuario actual
+- [ ] Sistema de rachas (streaks)
+  - [ ] Contador de días consecutivos
+  - [ ] Bonus por racha (3, 7, 30 días)
+  - [ ] Icono de fuego 🔥 en UI
+  - [ ] Notificación al mantener racha
+
+**Tareas Fase 3 - Minijuegos (4-5 días):**
+- [ ] Estructura base de juegos
+  - [ ] Página `/games`
+  - [ ] Validar nivel Gold+ para acceso
+  - [ ] Sistema de high scores
+- [ ] Implementar Snake
+  - [ ] Canvas HTML5
+  - [ ] Controles (flechas, WASD)
+  - [ ] Sistema de scoring
+  - [ ] Guardar high score personal
+  - [ ] Skins desbloqueables
+- [ ] Implementar Bacará
+  - [ ] Lógica del juego
+  - [ ] UI de cartas
+  - [ ] Sistema de fichas virtuales (solo diversión)
+  - [ ] Leaderboard semanal
+- [ ] Implementar Memoria Lost&Found
+  - [ ] Juego de memoria temático
+  - [ ] Imágenes de objetos perdidos
+  - [ ] Dificultad incremental
+  - [ ] Bonus por tiempo
+- [ ] Implementar Puzzle Slider
+  - [ ] Rompecabezas deslizante
+  - [ ] Diferentes tamaños (3x3, 4x4, 5x5)
+  - [ ] Imágenes de La Salle
+- [ ] UI general de juegos
+  - [ ] Dashboard con juegos disponibles
+  - [ ] Indicador de juegos bloqueados
+  - [ ] Tabla de high scores
+  - [ ] Historial de partidas
+
+**Criterios de Aceptación:**
+- ✅ Usuario puede ser marcado como finder
+- ✅ Puntos se otorgan correctamente
+- ✅ Niveles se calculan automáticamente
+- ✅ Badges se desbloquean cuando se cumplen requisitos
+- ✅ Rankings muestran datos actualizados
+- ✅ Rachas se mantienen correctamente
+- ✅ Minijuegos solo accesibles con nivel Gold+
+- ✅ High scores se guardan
+- ✅ Notificaciones de logros funcionan
+
+**Archivos a Crear:**
+```
+lib/models/
+  ├── FinderAction.ts
+  └── Badge.ts
+app/api/
+  ├── rankings/
+  │   ├── global/route.ts
+  │   ├── monthly/route.ts
+  │   ├── weekly/route.ts
+  │   └── by-category/[id]/route.ts
+  ├── posts/[postId]/mark-finder/route.ts
+  ├── badges/
+  │   └── route.ts
+  ├── user/[userId]/
+  │   ├── finder-stats/route.ts
+  │   └── badges/route.ts
+  └── games/
+      ├── route.ts
+      └── [gameId]/high-score/route.ts
+app/
+  ├── rankings/page.tsx
+  └── games/
+      ├── page.tsx
+      ├── snake/page.tsx
+      ├── bacara/page.tsx
+      ├── memoria/page.tsx
+      └── puzzle/page.tsx
+components/
+  ├── gamification/
+  │   ├── FinderBadge.tsx
+  │   ├── LevelIndicator.tsx
+  │   ├── PointsDisplay.tsx
+  │   ├── StreakIndicator.tsx
+  │   ├── BadgeGrid.tsx
+  │   └── LeaderboardList.tsx
+  ├── profile/
+  │   └── FinderStatsTab.tsx
+  └── games/
+      ├── SnakeGame.tsx
+      ├── BacaraGame.tsx
+      ├── MemoriaGame.tsx
+      └── PuzzleGame.tsx
+```
+
+**Estimación Total:** 9-12 días (≈ 2 semanas)
+
+---
+
 ## 🔮 Fases Futuras (Post-MVP)
 
 ### Fase 2: Features Avanzadas (Mes 3-4)
