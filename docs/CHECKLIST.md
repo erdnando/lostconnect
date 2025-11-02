@@ -76,12 +76,21 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 - [x] Arreglar Cloudinary upload error
 - [x] Mejorar contraste de textos (inputs, postcards, detalle)
 
-**Sprint 2.3: UX Mejorado (Estilo Facebook)**
-- [ ] Crear QuickPostToolbar (avatar + input → modal)
-- [ ] Crear PostCreationDrawer (modal estilo Facebook)
-- [ ] Rediseñar ImageUploader estilo Facebook
-- [ ] Crear LocationPicker mejorado (Check-in)
-- [ ] Refactor CategorySelector (opcional: multi-select)
+**Sprint 2.3: UX Mejorado (Estilo Facebook)** ✅
+- [x] Crear PostCreationDrawer (modal estilo Facebook)
+- [x] Implementar FAB (Floating Action Button)
+- [x] Sistema de categorías dinámicas desde DB
+- [x] Crear API de categorías GET /api/categories
+- [x] Character counters (título: 5-50, descripción: 20-255)
+- [x] Animación shake para validación de categoría
+- [x] Pull-to-refresh en el feed
+- [x] Comprimir imágenes antes de upload (max 1MB)
+- [x] Mejorar layout de detalle de post (título/descripción primero)
+
+**Sprint 2.4: Bugs de Producción** ✅
+- [x] Fix: MissingSchemaError en Vercel (import User model)
+- [x] Fix: Posts no se ven en producción
+- [x] Fix: Populate userId en serverless functions
 
 **Criterios de Aceptación Fase 2:**
 - [x] Feed muestra posts correctamente
@@ -89,9 +98,12 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 - [x] Validaciones funcionan
 - [x] Responsive en mobile
 - [x] Deployed en Vercel
-- [ ] QuickPost toolbar funciona
-- [ ] Modal de creación estilo Facebook
-- [ ] ImageUploader mejorado
+- [x] FAB funciona y aparece al hacer scroll
+- [x] Modal de creación estilo Facebook
+- [x] ImageUploader con compresión
+- [x] Pull-to-refresh implementado
+- [x] Categorías dinámicas desde DB
+- [x] Posts se ven correctamente en producción ✅
 
 ---
 
@@ -330,67 +342,63 @@ Usa este checklist para trackear tu progreso en el desarrollo del MVP.
 
 ```
 FASE 1: Setup y Fundación      [██████████] 100% ✅
-FASE 2: Posts                   [████████░░]  80% 🔄
+FASE 2: Posts                   [██████████] 100% ✅
 FASE 3: Interacciones           [░░░░░░░░░░]   0%
 FASE 4: Perfil y Polish         [░░░░░░░░░░]   0%
-Deployment                      [████████░░]  80% ✅
+Deployment                      [██████████] 100% ✅
 
-TOTAL MVP                       [████░░░░░░]  40%
+TOTAL MVP                       [█████░░░░░]  50%
 ```
 
 ---
 
-## 🎯 PRÓXIMO PASO: Sprint 2.3 - UX Mejorado (Facebook-style)
+## 🎯 PRÓXIMO PASO: Sprint 3.1 - Sistema de Reacciones
 
 ### ¿Qué sigue ahora?
 
-Mejorar la experiencia de creación de posts con un diseño más moderno y usable, inspirado en Facebook.
+Implementar el sistema completo de reacciones (likes, helpful, found) para que los usuarios puedan interactuar con los posts.
 
-#### Sprint 2.3: UX Mejorado - Toolbar y Modal (2-3 días)
-**Objetivo:** Modernizar la UI de creación de posts
+#### Sprint 3.1: Sistema de Reacciones (2-3 días)
+**Objetivo:** Permitir a los usuarios reaccionar a posts con diferentes tipos de emociones.
 
 **Tareas prioritarias:**
-1. 🔲 Crear QuickPostToolbar component
-   - Avatar del usuario + input placeholder
-   - Botón con ícono de 'post'
-   - onClick abre modal
+1. 🔲 Crear modelo Reaction en Mongoose
+   - userId, postId, type (like/helpful/found)
+   - Índice único compuesto (userId + postId)
    
-2. 🔲 Crear PostCreationDrawer component
-   - Modal/Drawer estilo Facebook
-   - Header con X y botón 'Post'
-   - Tipo Lost/Found como chips
-   - Textarea para descripción
-   - Bottom sheet con opciones
+2. 🔲 API: POST /api/posts/[postId]/reactions
+   - Toggle reacción (add/remove)
+   - Validar usuario autenticado
+   - Actualizar contador en Post
    
-3. 🔲 Rediseñar ImageUploader
-   - Look & feel de Facebook
-   - Grid preview de imágenes
-   - Botón 'Add photos'
-   - Eliminar imágenes individuales
+3. 🔲 API: GET /api/posts/[postId]/reactions
+   - Obtener todas las reacciones de un post
+   - Agrupar por tipo
    
-4. 🔲 Crear LocationPicker (Check-in style)
-   - Ícono 📍
-   - Input de búsqueda
-   - Guardar en post.location
+4. 🔲 Crear componente ReactionButton
+   - Iconos animados para cada tipo
+   - Estado activo/inactivo
+   - Optimistic updates
+   
+5. 🔲 Integrar en PostCard y PostDetail
+   - Mostrar contadores
+   - Highlight si el usuario reaccionó
+   - Animaciones suaves
 
-5. 🔲 (Opcional) CategorySelector multi-select
-   - Chips multi-seleccionables
-   - Fusionar categoría + tags
-   - ⚠️ Requiere cambio en schema
-
-**Duración estimada:** 2-3 días (8-12 horas)
+**Duración estimada:** 2-3 días (6-8 horas)
 
 **Criterios de éxito:**
-- ✅ Click en QuickPostToolbar abre modal
-- ✅ Modal tiene diseño moderno tipo Facebook
-- ✅ ImageUploader con mejor UX
-- ✅ LocationPicker funcional
-- ✅ Responsive en mobile y desktop
+- ✅ Puedo dar/quitar reacciones
+- ✅ Solo una reacción por usuario por post
+- ✅ Contadores actualizan en tiempo real
+- ✅ UI muestra mi reacción actual
+- ✅ Animaciones fluidas
+- ✅ Funciona en mobile y desktop
 
-**Pendiente para Fase 3:**
-- Sistema de comentarios
-- Sistema de reacciones
-- Tag People (complejidad alta)
+**Pendiente para Sprint 3.2:**
+- Sistema de comentarios con replies
+- Imágenes en comentarios
+- Ubicación en comentarios
 
 ---
 

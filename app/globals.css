@@ -1,14 +1,177 @@
 @import "tailwindcss";
 
+/* ========================================
+   FUENTES INDIVISA - TIPOGRAFÍA LA SALLE
+   ======================================== */
+
+/* Indivisa Text Sans - Fuente principal */
+
+/* Light 300 */
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-light.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-light_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-light_italic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Regular 400 */
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-regular.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-regular_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-regular_italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Bold 700 */
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-bold.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-bold_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-bold_italic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Black 900 */
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-black.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Sans';
+  src: url('/fonts/woff2/indivisa_text_sans-black_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_sans-black_italic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Indivisa Text Serif - Fuente secundaria para títulos */
+
+/* Light 300 */
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_light.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_light_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_light_italic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Regular 400 */
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_regular.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_regular_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_regular_italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Bold 700 */
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_bold.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_bold_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_bold_italic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Black 900 */
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_black.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indivisa Text Serif';
+  src: url('/fonts/woff2/indivisa_text_serif_black_italic.woff2') format('woff2'),
+       url('/fonts/woff/indivisa_text_serif_black_italic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-indivisa-sans: 'Indivisa Text Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-indivisa-serif: 'Indivisa Text Serif', Georgia, 'Times New Roman', serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-indivisa-sans);
+  --font-serif: var(--font-indivisa-serif);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -22,7 +185,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-indivisa-sans);
 }
 
 /* Animación de shake para indicar error */

@@ -764,28 +764,48 @@ Usuario       Next.js       API Route       MongoDB
 - ✅ Implementar DELETE /api/posts/[id]
 
 **Sprint 2.2: UI de Posts** ✅
-- ✅ Crear componente PostCard
-- ✅ Crear página de Feed (/)
-- ✅ Crear formulario de nuevo post (/post/new)
-- ✅ Implementar upload de múltiples imágenes
-- ✅ Agregar selector de ubicación
-- ✅ Crear página de detalle de post
-- ✅ Deploy inicial a Vercel
-- ✅ Corregir bugs de producción (OAuth, Cloudinary, contraste)
+- [x] Configurar shadcn/ui
+- [x] Crear componente PostCard
+- [x] Crear página Feed (/)
+- [x] Implementar filtros (Todos/Perdidos/Encontrados)
+- [x] Crear loading skeletons
+- [x] Crear empty state
+- [x] Crear PostForm
+- [x] Implementar React Hook Form + Zod
+- [x] Crear ImageUploader con Cloudinary
+- [x] Crear selector de ubicación
+- [x] Crear página /post/new
+- [x] Crear página /post/[id]
+- [x] Deploy a Vercel
+- [x] Corregir errores de OAuth en producción
+- [x] Arreglar Cloudinary upload error
+- [x] Mejorar contraste de textos (inputs, postcards, detalle)
 
-**Sprint 2.3: UX Mejorado (Facebook-style)** 🔄
-- [ ] Crear QuickPostToolbar (avatar + input → modal)
-- [ ] Crear PostCreationDrawer (modal estilo Facebook)
-- [ ] Rediseñar ImageUploader con look & feel moderno
-- [ ] Crear LocationPicker mejorado (Check-in style)
-- [ ] (Opcional) Refactor CategorySelector a multi-select
+**Sprint 2.3: UX Mejorado (Facebook-style)** ✅
+- [x] Crear PostCreationDrawer (modal estilo Facebook)
+- [x] Implementar FAB (Floating Action Button)
+- [x] Sistema de categorías dinámicas desde DB
+- [x] Crear API de categorías GET /api/categories
+- [x] Character counters (título: 5-50, descripción: 20-255)
+- [x] Animación shake para validación de categoría
+- [x] Pull-to-refresh en el feed
+- [x] Comprimir imágenes antes de upload (max 1MB)
+- [x] Mejorar layout de detalle de post
+
+**Sprint 2.4: Bugs de Producción** ✅
+- [x] Fix: MissingSchemaError en Vercel
+- [x] Fix: Posts no se ven en producción
+- [x] Fix: Import User model en postService
 
 **Entregables Fase 2:**
 - ✅ Usuarios pueden crear reportes
 - ✅ Feed funcional con lista de posts
 - ✅ Subida de imágenes operativa
 - ✅ Deployed en producción (Vercel)
-- [ ] UX mejorada estilo redes sociales modernas
+- ✅ UX mejorada estilo redes sociales modernas
+- ✅ FAB y pull-to-refresh implementados
+- ✅ Categorías dinámicas desde base de datos
+- ✅ Posts se visualizan correctamente en producción
 
 ---
 
@@ -848,13 +868,13 @@ Usuario       Next.js       API Route       MongoDB
 
 ```
 Semana 1-2:  Setup + Auth                    ✅ COMPLETADO
-Semana 3-4:  Posts (crear, ver, listar)      🔄 80% COMPLETADO
-            Sprint 2.3 en progreso (UX Mejorado)
-Semana 5-6:  Comentarios + Reacciones        ⏳ PENDIENTE
+Semana 3-4:  Posts (crear, ver, listar)      ✅ COMPLETADO
+             Sprint 2.3 y 2.4 completados (UX + Fixes)
+Semana 5-6:  Comentarios + Reacciones        ⏳ SIGUIENTE
 Semana 7-8:  Perfil + UX Polish              ⏳ PENDIENTE
 
 TOTAL: 2 meses para MVP completo
-PROGRESO ACTUAL: ~40% (4 de 8 semanas)
+PROGRESO ACTUAL: ~50% (4 de 8 semanas)
 ```
 
 ### 9.3 Priorización de Features (MoSCoW)

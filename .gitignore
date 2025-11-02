@@ -50,3 +50,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Indivisa Fonts (opcional - descomentar si las fuentes son muy pesadas)
+# Las fuentes Indivisa deben descargarse manualmente desde https://indivisafont.org/
+# Si prefieres no incluirlas en el repo (por tamaño), descomenta la siguiente línea:
+# /public/fonts/indivisa-*
+
+# Mantener el README de fonts
+!/public/fonts/README.md

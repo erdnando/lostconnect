@@ -14,7 +14,7 @@ Bienvenido al proyecto **LostConnect**. Esta es tu guía rápida para navegar to
 - Solución de problemas iniciales
 
 ### 2. Entender el Proyecto
-👉 **[README.md](./README.md)**
+👉 **[README.md](../README.md)**
 - Descripción general
 - Features del MVP
 - Stack tecnológico
@@ -85,6 +85,15 @@ Bienvenido al proyecto **LostConnect**. Esta es tu guía rápida para navegar to
 - Issues de deployment
 - Tips de debugging
 
+### Configuración de Fuentes Lasallistas
+👉 **[FONTS_SETUP.md](./FONTS_SETUP.md)** 🎨
+- Guía completa de Indivisa Font
+- Descarga e instalación de fuentes
+- Configuración técnica
+- Uso en componentes
+- Solución de problemas de fuentes
+- Recursos y documentación oficial
+
 ---
 
 ## 📖 Guías por Rol
@@ -134,14 +143,17 @@ Bienvenido al proyecto **LostConnect**. Esta es tu guía rápida para navegar to
 
 ```
 network-social/
-├── 📄 README.md                 # Intro y overview
-├── 📘 PLAN_MAESTRO.md          # Documento principal (TODO)
-├── 📗 GETTING_STARTED.md       # Quick start guide
-├── 📙 ESTRUCTURA.md            # Estructura de archivos
-├── 📕 ROADMAP.md               # Plan de desarrollo
-├── 📔 CHECKLIST.md             # Tareas y progreso
-├── 📓 TROUBLESHOOTING.md       # Solución de problemas
-└── 📋 INDEX.md                 # Este archivo
+├── 📄 README.md                 # Intro y overview (raíz)
+└── 📁 docs/
+    ├── 📘 PLAN_MAESTRO.md          # Documento principal (TODO)
+    ├── 📗 GETTING_STARTED.md       # Quick start guide
+    ├── 📙 ESTRUCTURA.md            # Estructura de archivos
+    ├── 📕 ROADMAP.md               # Plan de desarrollo
+    ├── 📔 CHECKLIST.md             # Tareas y progreso
+    ├── 📓 TROUBLESHOOTING.md       # Solución de problemas
+    ├── 🎨 FONTS_SETUP.md           # Configuración Indivisa Font
+    ├── 📋 INDEX.md                 # Este archivo
+    └── ...                         # Otros documentos
 ```
 
 ---
@@ -212,6 +224,7 @@ network-social/
 | Trackear progreso | CHECKLIST.md | Todo el doc |
 | Resolver error X | TROUBLESHOOTING.md | Buscar por error |
 | Ver UI/UX design | PLAN_MAESTRO.md | Sección 11 |
+| Configurar fuentes | FONTS_SETUP.md | Todo el doc |
 | Plan de testing | PLAN_MAESTRO.md | Sección 13 |
 | Deploy a Vercel | PLAN_MAESTRO.md | Sección 10.3 |
 
@@ -242,6 +255,7 @@ Marca los documentos que ya hayas leído:
 - [ ] ROADMAP.md
 - [ ] CHECKLIST.md
 - [ ] TROUBLESHOOTING.md
+- [ ] FONTS_SETUP.md 🎨
 - [ ] INDEX.md (este documento)
 
 ---
@@ -272,7 +286,8 @@ Marca los documentos que ya hayas leído:
 | ROADMAP.md | 1.0 | 25 Oct 2025 |
 | CHECKLIST.md | 1.0 | 25 Oct 2025 |
 | TROUBLESHOOTING.md | 1.0 | 25 Oct 2025 |
-| INDEX.md | 1.0 | 25 Oct 2025 |
+| FONTS_SETUP.md | 1.0 | 02 Nov 2025 |
+| INDEX.md | 1.1 | 02 Nov 2025 |
 
 ---
 
