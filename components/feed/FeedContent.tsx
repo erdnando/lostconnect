@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Filter, Search } from 'lucide-react';
 import { AuthButton } from '@/components/auth/AuthButton';
+import { LaSalleLogo } from '@/components/layout/LaSalleLogo';
 
 /**
  * Tipo de Post
@@ -157,7 +158,7 @@ export function FeedContent() {
   return (
     <>
       {/* Header */}
-      <header className="border-b bg-gradient-to-r from-blue-600 to-indigo-700 backdrop-blur-sm sticky top-0 z-10 shadow-md">
+      <header className="border-b bg-gradient-to-r from-[#001D68] to-[#1A3D8F] backdrop-blur-sm sticky top-0 z-10 shadow-md">
         <div className="w-full px-4 py-4">
           <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
             {/* Logo */}
@@ -184,7 +185,13 @@ export function FeedContent() {
             </Link>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Logo La Salle - discreto */}
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-colors">
+                <div className="bg-white rounded px-1 py-0.5">
+                  <LaSalleLogo size="sm" />
+                </div>
+              </div>
               <AuthButton />
             </div>
           </div>

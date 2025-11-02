@@ -29,7 +29,7 @@ export function AuthButton() {
     return (
       <button
         onClick={() => signIn("google")}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="flex items-center gap-2 px-4 py-2 bg-[#001D68] hover:bg-[#1A3D8F] text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#001D68]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +55,7 @@ export function AuthButton() {
     <div className="relative">
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full"
+        className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#001D68] rounded-full"
       >
         {session.user?.image ? (
           <Image
@@ -63,10 +63,10 @@ export function AuthButton() {
             alt={session.user.name || "User"}
             width={40}
             height={40}
-            className="rounded-full border-2 border-gray-200 dark:border-gray-700"
+            className="rounded-full border-2 border-[#8088A8]/30 hover:border-[#001D68] transition-colors"
           />
         ) : (
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#001D68] to-[#1A3D8F] flex items-center justify-center text-white font-semibold">
             {session.user?.name?.[0]?.toUpperCase() || "U"}
           </div>
         )}
@@ -155,7 +155,7 @@ export function AuthButton() {
                   setIsMenuOpen(false);
                   signOut({ callbackUrl: "/" });
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-[#CE1126] hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
               >
                 <div className="flex items-center gap-2">
                   <svg

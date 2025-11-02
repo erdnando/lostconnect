@@ -161,10 +161,38 @@
 }
 
 :root {
+  /* Colores Base */
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Tipografía Indivisa */
   --font-indivisa-sans: 'Indivisa Text Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   --font-indivisa-serif: 'Indivisa Text Serif', Georgia, 'Times New Roman', serif;
+  
+  /* ========================================
+     COLORES INSTITUCIONALES LA SALLE
+     ======================================== */
+  
+  /* Rojo La Salle - PANTONE 186 C */
+  --lasalle-red: #CE1126;
+  --lasalle-red-light: #E63946;
+  --lasalle-red-dark: #A00F1E;
+  --lasalle-red-50: rgba(206, 17, 38, 0.5);
+  --lasalle-red-10: rgba(206, 17, 38, 0.1);
+  
+  /* Azul La Salle - PANTONE 2755 C */
+  --lasalle-blue: #001D68;
+  --lasalle-blue-light: #1A3D8F;
+  --lasalle-blue-dark: #000D34;
+  --lasalle-blue-50: rgba(0, 29, 104, 0.5);
+  --lasalle-blue-10: rgba(0, 29, 104, 0.1);
+  
+  /* Gris La Salle - PANTONE 2758 C al 50% */
+  --lasalle-gray: #8088A8;
+  --lasalle-gray-light: #B0B5C8;
+  --lasalle-gray-dark: #606888;
+  --lasalle-gray-50: rgba(128, 136, 168, 0.5);
+  --lasalle-gray-10: rgba(128, 136, 168, 0.1);
 }
 
 @theme inline {
@@ -179,6 +207,11 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    
+    /* Ajustes de colores La Salle para modo oscuro */
+    --lasalle-red: #E63946;
+    --lasalle-blue: #3D5FA8;
+    --lasalle-gray: #B0B5C8;
   }
 }
 
